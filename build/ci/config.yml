@@ -4,8 +4,25 @@ jobs:
     docker:
       - image: circleci/golang:1.12
 
+    environment: # environment variables for the build itself
+      TEST_RESULTS: /tmp/test-results # path to where test results will be saved
+
     steps:
       - checkout
-
       - run: go get -v -t -d ./...
-      - run: go test -v ./...
+      - run: go get github.com/jstemmer/go-junit-report
+
+      - run: mkdir -p $TEST_RESULTS
+      - run:
+        name: Run unit tests
+        # Store the results of our tests in the $TEST_RESULTS directory
+        command: |
+          trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+          go test -v ./... | tee ${TEST_RESULTS}/go-test.out
+
+      - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: /tmp/test-results
+          destination: raw-test-output
+
+      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: /tmp/test-results
