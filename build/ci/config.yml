@@ -14,11 +14,11 @@ jobs:
 
       - run: mkdir -p $TEST_RESULTS
       - run:
-        name: Run unit tests
-        # Store the results of our tests in the $TEST_RESULTS directory
-        command: |
-          trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-          go test -v ./... | tee ${TEST_RESULTS}/go-test.out
+          name: Run unit tests
+          # Store the results of our tests in the $TEST_RESULTS directory
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            go test -v ./... | tee ${TEST_RESULTS}/go-test.out
 
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: /tmp/test-results
