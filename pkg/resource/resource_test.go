@@ -14,7 +14,6 @@ func TestResource_ToFalcoRule(t *testing.T) {
 		Vendor:      "Sysdig",
 		Name:        "Foo",
 		Description: "FooBar",
-		Readme:      "README.md",
 		Keywords:    []string{"monitoring", "security"},
 		Icon:        "https://sysdig.com/icon.png",
 		Maintainers: []*Maintainer{
@@ -41,7 +40,6 @@ func TestResource_ToFalcoRule(t *testing.T) {
 		Vendor:      "Sysdig",
 		Name:        "Foo",
 		Description: "FooBar",
-		Readme:      "README.md",
 		Keywords:    []string{"monitoring", "security"},
 		Icon:        "https://sysdig.com/icon.png",
 		Maintainers: []*Maintainer{
@@ -92,7 +90,6 @@ func TestResource_ToGrafanaDashboard(t *testing.T) {
 		Vendor:      "Sysdig",
 		Name:        "",
 		Description: "",
-		Readme:      "",
 		Rules:       nil,
 		Keywords:    []string{"monitoring", "security"},
 		Icon:        "https://sysdig.com/icon.png",

@@ -19,7 +19,6 @@ func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
 		Vendor:      "foo",
 		Name:        "FooBar",
 		Description: "FooBar Description\n",
-		Readme:      "README.md",
 		Keywords:    []string{"monitoring", "security", "cryptomining"},
 		Icon:        "https://sysdig.com/image.png",
 		Maintainers: []*Maintainer{

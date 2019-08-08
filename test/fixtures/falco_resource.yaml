@@ -5,7 +5,6 @@ vendor: foo
 name: FooBar
 description: |
   FooBar Description
-readme: README.md # can customize the readme file
 keywords:
   - monitoring
   - security

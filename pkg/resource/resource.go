@@ -6,7 +6,6 @@ type Resource struct {
 	Vendor      string           `json:"vendor" yaml:"vendor"`
 	Name        string           `json:"name" yaml:"name"`
 	Description string           `json:"description" yaml:"description"`
-	Readme      string           `json:"readme" yaml:"readme"`
 	Keywords    []string         `json:"keywords" yaml:"keywords"`
 	Icon        string           `json:"icon" yaml:"icon"`
 	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
@@ -26,7 +25,6 @@ func (r *Resource) ToFalcoRule() *FalcoRule {
 		Vendor:      r.Vendor,
 		Name:        r.Name,
 		Description: r.Description,
-		Readme:      r.Readme,
 		Keywords:    r.Keywords,
 		Icon:        r.Icon,
 		Maintainers: r.Maintainers,
