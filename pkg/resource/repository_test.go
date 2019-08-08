@@ -44,12 +44,6 @@ func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
   priority: INFO
 `,
 			},
-			{
-				File: "rules.yaml",
-			},
-			{
-				File: "rules2.yaml",
-			},
 		},
 	}
 

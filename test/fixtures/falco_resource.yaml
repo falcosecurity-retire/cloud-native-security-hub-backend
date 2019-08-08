@@ -26,5 +26,3 @@ rules:
         condition: proc.name in (my_programs) and evt.type=open
         output: a tracked program opened a file (user=%user.name command=%proc.cmdline file=%fd.name)
         priority: INFO
-  - file: rules.yaml
-  - file: rules2.yaml
