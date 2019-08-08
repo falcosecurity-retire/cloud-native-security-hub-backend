@@ -1,5 +1,5 @@
 package resource
 
-type ResourceRepository interface {
+type Repository interface {
 	All() ([]Resource, error)
 }
