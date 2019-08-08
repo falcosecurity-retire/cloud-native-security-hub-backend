@@ -1,22 +1,22 @@
 package resource
 
 type Resource struct {
-	ApiVersion  string
-	Kind        string
-	Vendor      string
-	Name        string
-	Description string
-	Readme      string
-	Keywords    []string
-	Icon        string
-	Maintainers []*Maintainer
-	Rules       []*FalcoRuleData
+	ApiVersion  string           `json:"apiVersion" yaml:"apiVersion"`
+	Kind        string           `json:"kind" yaml:"kind"`
+	Vendor      string           `json:"vendor" yaml:"vendor"`
+	Name        string           `json:"name" yaml:"name"`
+	Description string           `json:"description" yaml:"description"`
+	Readme      string           `json:"readme" yaml:"readme"`
+	Keywords    []string         `json:"keywords" yaml:"keywords"`
+	Icon        string           `json:"icon" yaml:"icon"`
+	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
+	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
 	DashboardID int
 }
 
 type Maintainer struct {
-	Name  string
-	Email string
+	Name  string `json:"name" yaml:"name"`
+	Email string `json:"email" yaml:"email"`
 }
 
 func (r *Resource) ToFalcoRule() *FalcoRule {
