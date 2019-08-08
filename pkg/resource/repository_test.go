@@ -2,63 +2,18 @@ package resource
 
 import (
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
-	"os"
 	"testing"
 )
 
-type dummyRepository struct {
-}
-
-func (d *dummyRepository) All() ([]Resource, error) {
-	resources := []Resource{
-		{Name: "foo"},
-		{Name: "bar"},
+func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
+	path := "../../test/fixtures"
+	repository := FileRepository{
+		Path: path,
 	}
-	return resources, nil
-}
 
-func TestRepository(t *testing.T) {
-	t.Parallel()
+	resources, _ := repository.All()
 
-	dummyRepo := dummyRepository{}
-	resources, err := dummyRepo.All()
-	assert.Equal(t, nil, err)
-	assert.Equal(t, []Resource{
-		{Name: "foo"},
-		{Name: "bar"},
-	}, resources)
-}
-
-type fileRepository struct {
-	filenames []string
-}
-
-func (f *fileRepository) All() (resources []Resource, err error) {
-	for _, filename := range f.filenames {
-		file, err := os.OpenFile(filename, os.O_RDONLY, 0644)
-		if err != nil {
-			break
-		}
-		var resource Resource
-		err = yaml.NewDecoder(file).Decode(&resource)
-		if err != nil {
-			break
-		}
-		resources = append(resources, resource)
-		file.Close()
-	}
-	return
-}
-
-func TestFileRepository(t *testing.T) {
-	filenames := []string{"../../test/falco_resource.yaml"}
-	repository := fileRepository{filenames}
-	resources, err := repository.All()
-	assert.Equal(t, nil, err)
-	assert.Equal(t, len(filenames), len(resources))
-
-	falcoRule := &FalcoRule{
+	resource := Resource{
 		ApiVersion:  "v1",
 		Kind:        "FalcoRules",
 		Vendor:      "foo",
@@ -98,5 +53,5 @@ func TestFileRepository(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, falcoRule, resources[0].ToFalcoRule())
+	assert.Equal(t, []Resource{resource}, resources)
 }
