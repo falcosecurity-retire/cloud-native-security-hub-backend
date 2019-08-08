@@ -5,9 +5,9 @@ import (
 )
 
 type RetrieveAllResources struct {
-	Resources resource.Repository
+	ResourceRepository resource.Repository
 }
 
 func (useCase *RetrieveAllResources) Execute() ([]resource.Resource, error) {
-	return useCase.Resources.All()
+	return useCase.ResourceRepository.All()
 }

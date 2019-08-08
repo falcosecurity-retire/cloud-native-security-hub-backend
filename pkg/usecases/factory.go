@@ -19,7 +19,7 @@ type factory struct {
 
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
 	return &RetrieveAllResources{
-		Resources: f.NewResourcesRepository(),
+		ResourceRepository: f.NewResourcesRepository(),
 	}
 }
 

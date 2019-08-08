@@ -21,7 +21,7 @@ func (resources *dummyResourcesRepository) All() ([]resource.Resource, error) {
 
 func TestReturnsAllResources(t *testing.T) {
 	useCase := RetrieveAllResources{
-		Resources: &dummyResourcesRepository{},
+		ResourceRepository: &dummyResourcesRepository{},
 	}
 
 	resources, _ := useCase.Execute()
