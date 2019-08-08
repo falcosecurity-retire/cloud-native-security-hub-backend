@@ -17,10 +17,10 @@ func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 
-	assert.Equal(t, recorder.Code, http.StatusOK)
+	assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
-func TestRetrieveAllResourcesHandlerReturnsResources(t *testing.T) {
+func TestRetrieveAllResourcesHandlerReturnsResourcesSerializedAsJSON(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/resources", nil)
 	recorder := httptest.NewRecorder()
 
@@ -31,14 +31,14 @@ func TestRetrieveAllResourcesHandlerReturnsResources(t *testing.T) {
 	body, _ := ioutil.ReadAll(recorder.Body)
 	json.Unmarshal([]byte(body), &result)
 
-	assert.Equal(t, result, []resource.Resource{
+	assert.Equal(t, []resource.Resource{
 		{
 			Name: "Falco profile for Nginx",
 		},
 		{
 			Name: "Grafana Dashboard for Traefik",
 		},
-	})
+	}, result)
 }
 
 func TestRetrieveAllResourcesHandlerReturnsAJSONResponse(t *testing.T) {
@@ -48,7 +48,7 @@ func TestRetrieveAllResourcesHandlerReturnsAJSONResponse(t *testing.T) {
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 
-	assert.Equal(t, recorder.HeaderMap, jsonHeader())
+	assert.Equal(t, jsonHeader(), recorder.HeaderMap)
 }
 
 func jsonHeader() http.Header {

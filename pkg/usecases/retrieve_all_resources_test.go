@@ -6,8 +6,7 @@ import (
 	"testing"
 )
 
-type dummyResourcesRepository struct {
-}
+type dummyResourcesRepository struct{}
 
 func (resources *dummyResourcesRepository) All() ([]resource.Resource, error) {
 	return []resource.Resource{
