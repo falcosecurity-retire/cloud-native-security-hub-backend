@@ -6,8 +6,6 @@ import (
 )
 
 func TestResource_ToFalcoRule(t *testing.T) {
-	t.Parallel()
-
 	resource := Resource{
 		ApiVersion:  "v1",
 		Kind:        "FalcoRule",
@@ -63,8 +61,6 @@ func TestResource_ToFalcoRule(t *testing.T) {
 }
 
 func TestResource_ToGrafanaDashboard(t *testing.T) {
-	t.Parallel()
-
 	dashboard := &GrafanaDashboard{
 		ApiVersion: "v1",
 		Kind:       "GrafanaDashboard",
