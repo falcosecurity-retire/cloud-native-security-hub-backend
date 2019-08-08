@@ -1,12 +1,15 @@
 package web
 
 import (
-	"cloud-native-visibility-hub/web/api"
 	"github.com/julienschmidt/httprouter"
 )
 
 func NewRouter() *httprouter.Router {
 	router := httprouter.New()
-	api.RegisterOn(router)
+	registerOn(router)
 	return router
+}
+
+func registerOn(router *httprouter.Router) {
+	router.GET("/resources", retrieveAllResourcesHandler)
 }

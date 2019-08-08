@@ -1,7 +1,6 @@
-package api
+package web
 
 import (
-	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -12,14 +11,8 @@ func TestRetrieveAllResourcesHandler(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/resources", nil)
 	recorder := httptest.NewRecorder()
 
-	router := newRouter()
+	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 
 	assert.Equal(t, recorder.Code, http.StatusOK)
-}
-
-func newRouter() *httprouter.Router {
-	router := httprouter.New()
-	RegisterOn(router)
-	return router
 }
