@@ -1,5 +1,10 @@
 package resource
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Resource struct {
 	ApiVersion  string           `json:"apiVersion" yaml:"apiVersion"`
 	Kind        string           `json:"kind" yaml:"kind"`
@@ -42,4 +47,30 @@ func (r *Resource) ToGrafanaDashboard() *GrafanaDashboard {
 		Maintainers: r.Maintainers,
 		DashboardID: r.DashboardID,
 	}
+}
+
+func (r *Resource) Validate() error {
+	var errors []string
+
+	if r.Kind == "" {
+		errors = append(errors, "the resource must have a defined Kind")
+	}
+	if r.ApiVersion == "" {
+		errors = append(errors, "the resource does not have an API Version")
+	}
+	if r.Vendor == "" {
+		errors = append(errors, "the resource must be assigned to a vendor")
+	}
+	if len(r.Maintainers) == 0 {
+		errors = append(errors, "the resource must have at least one maintainer")
+	}
+	if r.Icon == "" {
+		errors = append(errors, "the resource must have a valid icon")
+	}
+
+	if len(errors) > 0 {
+		return fmt.Errorf(strings.Join(errors, ","))
+	}
+
+	return nil
 }

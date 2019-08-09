@@ -15,5 +15,4 @@ type FalcoRule struct {
 
 type FalcoRuleData struct {
 	Raw  string `json:"raw" yaml:"raw"`
-	File string `json:"file" yaml:"file"`
 }
