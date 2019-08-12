@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cnvh-backend-deployment
+  namespace: cnvh
+  labels:
+    app: cnvh-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cnvh-backend
+  template:
+    metadata:
+      labels:
+        app: cnvh-backend
+    spec:
+      volumes:
+        - name: resources
+          emptyDir: {}
+      containers:
+      - name: cnvh-backend
+        image: gcr.io/mateo-burillo-ns/cnvh-backend:latest
+        env:
+          - name: RESOURCES_PATH
+            value: /resources
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - name: resources
+            mountPath: /resources
+            readOnly: true
+      - name: cnvh-resources
+        image: gcr.io/mateo-burillo-ns/cnvh-resources:latest
+        command: ["/bin/sh", "-c", "--"]
+        args: ["while true; do cp -r /resources/* /shared-resources; sleep 3600; done"]
+        volumeMounts:
+          - name: resources
+            mountPath: /shared-resources
