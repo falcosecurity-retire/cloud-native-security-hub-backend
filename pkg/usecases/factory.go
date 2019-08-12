@@ -2,6 +2,9 @@ package usecases
 
 import (
 	"cloud-native-visibility-hub/pkg/resource"
+	"cloud-native-visibility-hub/pkg/resource/repository"
+	"log"
+	"os"
 )
 
 type Factory interface {
@@ -24,19 +27,10 @@ func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
 }
 
 func (f *factory) NewResourcesRepository() resource.Repository {
-	return &inMemoryResourceRepository{}
-}
-
-type inMemoryResourceRepository struct {
-}
-
-func (resources *inMemoryResourceRepository) All() ([]resource.Resource, error) {
-	return []resource.Resource{
-		{
-			Name: "Falco profile for Nginx",
-		},
-		{
-			Name: "Grafana Dashboard for Traefik",
-		},
-	}, nil
+	resourcesPath, ok := os.LookupEnv("RESOURCES_PATH")
+	if !ok {
+		log.Println("The RESOURCES_PATH env var is not set")
+		os.Exit(1)
+	}
+	return &repository.File{Path: resourcesPath}
 }

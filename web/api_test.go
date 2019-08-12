@@ -2,18 +2,20 @@ package web
 
 import (
 	"cloud-native-visibility-hub/pkg/resource"
+	"cloud-native-visibility-hub/pkg/resource/repository"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
 func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/resources", nil)
 	recorder := httptest.NewRecorder()
-
+	os.Setenv("RESOURCES_PATH", "../test/fixtures")
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 
@@ -23,6 +25,9 @@ func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 func TestRetrieveAllResourcesHandlerReturnsResourcesSerializedAsJSON(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/resources", nil)
 	recorder := httptest.NewRecorder()
+	path := "../test/fixtures"
+	repo := repository.File{Path: path}
+	resources, _ := repo.All()
 
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
@@ -31,20 +36,13 @@ func TestRetrieveAllResourcesHandlerReturnsResourcesSerializedAsJSON(t *testing.
 	body, _ := ioutil.ReadAll(recorder.Body)
 	json.Unmarshal([]byte(body), &result)
 
-	assert.Equal(t, []resource.Resource{
-		{
-			Name: "Falco profile for Nginx",
-		},
-		{
-			Name: "Grafana Dashboard for Traefik",
-		},
-	}, result)
+	assert.Equal(t, resources, result)
 }
 
 func TestRetrieveAllResourcesHandlerReturnsAJSONResponse(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/resources", nil)
 	recorder := httptest.NewRecorder()
-
+	os.Setenv("RESOURCES_PATH", "../test/fixtures")
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 

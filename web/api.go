@@ -11,9 +11,11 @@ var factory = usecases.NewFactory()
 
 func retrieveAllResourcesHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	useCase := factory.NewRetrieveAllResourcesUseCase()
-
-	resources, _ := useCase.Execute()
-	resourcesAsJSON, _ := json.Marshal(resources)
+	resources, err := useCase.Execute()
+	if err != nil {
+		writer.WriteHeader(500)
+		writer.Write([]byte(err.Error()))
+	}
 	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(resourcesAsJSON)
+	json.NewEncoder(writer).Encode(resources)
 }
