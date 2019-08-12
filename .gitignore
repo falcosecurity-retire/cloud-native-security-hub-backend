@@ -13,3 +13,6 @@
 
 # Jetbrains software
 .idea
+
+# Terraform
+.terraform
