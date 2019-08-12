@@ -23,32 +23,6 @@ type Maintainer struct {
 	Email string `json:"email" yaml:"email"`
 }
 
-func (r *Resource) ToFalcoRule() *FalcoRule {
-	return &FalcoRule{
-		ApiVersion:  r.ApiVersion,
-		Kind:        r.Kind,
-		Vendor:      r.Vendor,
-		Name:        r.Name,
-		Description: r.Description,
-		Keywords:    r.Keywords,
-		Icon:        r.Icon,
-		Maintainers: r.Maintainers,
-		Rules:       r.Rules,
-	}
-}
-
-func (r *Resource) ToGrafanaDashboard() *GrafanaDashboard {
-	return &GrafanaDashboard{
-		ApiVersion:  r.ApiVersion,
-		Kind:        r.Kind,
-		Vendor:      r.Vendor,
-		Keywords:    r.Keywords,
-		Icon:        r.Icon,
-		Maintainers: r.Maintainers,
-		DashboardID: r.DashboardID,
-	}
-}
-
 func (r *Resource) Validate() error {
 	var errors []string
 
