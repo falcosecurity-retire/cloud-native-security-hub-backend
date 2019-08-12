@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"cloud-native-visibility-hub/pkg/resource"
-	"cloud-native-visibility-hub/pkg/resource/repository"
 	"log"
 	"os"
 )
@@ -32,5 +31,10 @@ func (f *factory) NewResourcesRepository() resource.Repository {
 		log.Println("The RESOURCES_PATH env var is not set")
 		os.Exit(1)
 	}
-	return &repository.File{Path: resourcesPath}
+	repo, err := resource.NewFile(resourcesPath)
+	if err != nil {
+		log.Println("the resource repository of type file does not exist")
+		os.Exit(1)
+	}
+	return repo
 }

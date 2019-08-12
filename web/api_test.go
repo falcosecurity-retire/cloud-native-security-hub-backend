@@ -2,7 +2,6 @@ package web
 
 import (
 	"cloud-native-visibility-hub/pkg/resource"
-	"cloud-native-visibility-hub/pkg/resource/repository"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -26,7 +25,8 @@ func TestRetrieveAllResourcesHandlerReturnsResourcesSerializedAsJSON(t *testing.
 	request, _ := http.NewRequest("GET", "/resources", nil)
 	recorder := httptest.NewRecorder()
 	path := "../test/fixtures"
-	repo := repository.File{Path: path}
+	repo, err := resource.NewFile(path)
+	assert.Equal(t, nil, err)
 	resources, _ := repo.All()
 
 	router := NewRouter()
