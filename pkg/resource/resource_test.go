@@ -5,9 +5,54 @@ import (
 	"testing"
 )
 
+func TestResourceValidateOK(t *testing.T) {
+	resource := newResource()
 
-func TestResource_Validate(t *testing.T) {
-	fullResource := Resource{
+	assert.NoError(t, resource.Validate())
+}
+
+func TestResourceValidateApiVersion(t *testing.T) {
+	resourceWithoutVersion := newResource()
+
+	resourceWithoutVersion.ApiVersion = ""
+
+	assert.Error(t, resourceWithoutVersion.Validate())
+}
+
+func TestResourceValidateKind(t *testing.T) {
+	resourceWithoutKind := newResource()
+
+	resourceWithoutKind.Kind = ""
+
+	assert.Error(t, resourceWithoutKind.Validate())
+}
+
+func TestResourceValidateVendor(t *testing.T) {
+	resourceWithoutVendor := newResource()
+
+	resourceWithoutVendor.Vendor = ""
+
+	assert.Error(t, resourceWithoutVendor.Validate())
+}
+
+func TestResourceValidateMaintainers(t *testing.T) {
+	resourceWithoutMaintainers := newResource()
+
+	resourceWithoutMaintainers.Maintainers = []*Maintainer{}
+
+	assert.Error(t, resourceWithoutMaintainers.Validate())
+}
+
+func TestResourceValidateIcon(t *testing.T) {
+	resourceWithoutIcon := newResource()
+
+	resourceWithoutIcon.Icon = ""
+
+	assert.Error(t, resourceWithoutIcon.Validate())
+}
+
+func newResource() Resource {
+	return Resource{
 		ApiVersion:  "v1",
 		Kind:        "GrafanaDashboard",
 		Vendor:      "Sysdig",
@@ -24,26 +69,4 @@ func TestResource_Validate(t *testing.T) {
 		},
 		DashboardID: 0,
 	}
-
-	resourceWithoutVersion := fullResource
-	resourceWithoutVersion.ApiVersion = ""
-	assert.Error(t, resourceWithoutVersion.Validate())
-
-	resourceWithoutKind := fullResource
-	resourceWithoutKind.Kind = ""
-	assert.Error(t, resourceWithoutKind.Validate())
-
-	resourceWithoutVendor := fullResource
-	resourceWithoutVendor.Kind = ""
-	assert.Error(t, resourceWithoutVendor.Validate())
-
-	resourceWithoutMaintainers := fullResource
-	resourceWithoutMaintainers.Maintainers = []*Maintainer{}
-	assert.Error(t, resourceWithoutMaintainers.Validate())
-
-	resourceWithoutIcon := fullResource
-	resourceWithoutIcon.Kind = ""
-	assert.Error(t, resourceWithoutIcon.Validate())
-
-	assert.Equal(t, nil, fullResource.Validate())
 }
