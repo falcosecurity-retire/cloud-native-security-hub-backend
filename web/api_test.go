@@ -15,12 +15,17 @@ func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/resources", "../test/fixtures/resources")
 }
 
+func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
+	apacheHash := "C2CH7QOU44ZJ2HC7QJJT"
+	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash, "../test/fixtures/resources")
+}
+
 func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/vendors", "../test/fixtures/vendors")
 }
 
 func TestRetrieveOneVendorsHandlerReturnsHTTPOk(t *testing.T) {
-	testRetrieveAllReturnsHTTPOk(t, "/vendor/apache", "../test/fixtures/vendors")
+	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache", "../test/fixtures/vendors")
 }
 
 func testRetrieveAllReturnsHTTPOk(t *testing.T, path, fixturesPath string) {

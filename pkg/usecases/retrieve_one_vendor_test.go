@@ -19,7 +19,7 @@ func (resources *dummyVendorRepository) All() ([]resource.Resource, error) {
 	}, nil
 }
 
-func TestReturnsOneVendor(t *testing.T) {
+func TestReturnsOneVendorByName(t *testing.T) {
 	useCase := RetrieveOneVendor{
 		VendorRepository: &dummyVendorRepository{},
 		VendorID:         "apache",
@@ -27,12 +27,27 @@ func TestReturnsOneVendor(t *testing.T) {
 
 	res, _ := useCase.Execute()
 
-	assert.Equal(t, res, resource.Resource{
+	assert.Equal(t, resource.Resource{
 		Name: "Apache",
-	})
+	}, res)
 }
 
-func TestReturnsOneVendorNotFound (t *testing.T) {
+func TestReturnsOneVendorByHash(t *testing.T) {
+	repository := &dummyVendorRepository{}
+	all, _ := repository.All()
+	expected := all[0]
+
+	useCase := RetrieveOneVendor{
+		VendorRepository: repository,
+		VendorID:         expected.Hash(),
+	}
+
+	res, _ := useCase.Execute()
+
+	assert.Equal(t, expected, res)
+}
+
+func TestReturnsOneVendorNotFound(t *testing.T) {
 	useCase := RetrieveOneVendor{
 		VendorRepository: &dummyVendorRepository{},
 		VendorID:         "non-existent",

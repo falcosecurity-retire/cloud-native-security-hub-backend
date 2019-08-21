@@ -1,6 +1,8 @@
 package resource
 
 import (
+	"crypto/sha1"
+	"encoding/base32"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -49,6 +51,18 @@ func TestResourceValidateIcon(t *testing.T) {
 	resourceWithoutIcon.Icon = ""
 
 	assert.Error(t, resourceWithoutIcon.Validate())
+}
+
+func TestResourceHash(t *testing.T) {
+	resource := newResource()
+	sum := sha1.Sum([]byte(resource.ApiVersion + string(resource.Kind) + resource.Name + resource.Vendor))
+	b32 := base32.StdEncoding.EncodeToString(sum[:])
+	expected := b32[:20]
+
+	result := resource.Hash()
+
+	assert.Equal(t, expected, result)
+
 }
 
 func newResource() Resource {

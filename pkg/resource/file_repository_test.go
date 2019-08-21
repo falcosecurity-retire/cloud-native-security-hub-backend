@@ -15,7 +15,7 @@ func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
 }
 
 func buildResourcesFromFixtures() []Resource {
-	return []Resource{
+	resources := []Resource{
 		{
 			ApiVersion:  "v1",
 			Kind:        "FalcoRules",
@@ -66,6 +66,12 @@ func buildResourcesFromFixtures() []Resource {
 			},
 		},
 	}
+
+	for i := range resources {
+		resources[i].ID = resources[i].Hash()
+	}
+
+	return resources
 }
 
 func TestFileRepositoryReturnsAnErrorIfPathDoesNotExist(t *testing.T) {

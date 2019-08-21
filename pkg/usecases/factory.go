@@ -8,6 +8,7 @@ import (
 
 type Factory interface {
 	NewRetrieveAllResourcesUseCase() *RetrieveAllResources
+	NewRetrieveOneResourceUseCase(hash string) *RetrieveOneResource
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 
@@ -25,6 +26,13 @@ type factory struct {
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
 	return &RetrieveAllResources{
 		ResourceRepository: f.NewResourcesRepository(),
+	}
+}
+
+func (f *factory) NewRetrieveOneResourceUseCase(hash string) *RetrieveOneResource {
+	return &RetrieveOneResource{
+		ResourceRepository: f.NewResourcesRepository(),
+		Hash:               hash,
 	}
 }
 

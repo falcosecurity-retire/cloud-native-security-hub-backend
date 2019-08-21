@@ -19,8 +19,9 @@ func (useCase *RetrieveOneVendor) Execute() (res resource.Resource, err error) {
 
 	for _, vendor := range vendors {
 		vendorName := strings.ToLower(vendor.Name)
+		vendorID := strings.ToLower(vendor.Hash())
 		vendorToLookFor := strings.ToLower(useCase.VendorID)
-		if vendorName == vendorToLookFor {
+		if vendorName == vendorToLookFor || vendorID == vendorToLookFor {
 			res = vendor
 			return
 		}

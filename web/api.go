@@ -20,6 +20,17 @@ func retrieveAllResourcesHandler(writer http.ResponseWriter, request *http.Reque
 	json.NewEncoder(writer).Encode(resources)
 }
 
+
+func retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	useCase := factory.NewRetrieveOneResourceUseCase(params.ByName("hash"))
+	resources, err := useCase.Execute()
+	if err != nil {
+		writer.WriteHeader(500)
+		writer.Write([]byte(err.Error()))
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(writer).Encode(resources)
+}
 func retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	useCase := factory.NewRetrieveAllVendorsUseCase()
 	resources, err := useCase.Execute()

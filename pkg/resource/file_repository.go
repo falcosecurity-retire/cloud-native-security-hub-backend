@@ -24,6 +24,7 @@ func (f *file) All() (resources []Resource, err error) {
 			if err != nil {
 				return err
 			}
+			resource.ID = resource.Hash()
 			resources = append(resources, resource)
 		}
 		return nil
