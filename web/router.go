@@ -13,4 +13,5 @@ func NewRouter() *httprouter.Router {
 func registerOn(router *httprouter.Router) {
 	router.GET("/resources", retrieveAllResourcesHandler)
 	router.GET("/vendors", retrieveAllVendorsHandler)
+	router.GET("/vendor/:vendor", retrieveOneVendorsHandler)
 }

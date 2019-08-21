@@ -3,6 +3,9 @@
 test:
 	go test -v ./...
 
+dev:
+	RESOURCES_PATH=test/fixtures/resources VENDOR_PATH=test/fixtures/vendors go run cmd/server/main.go
+
 watch:
 	ag -l | entr -c go test -v ./...
 

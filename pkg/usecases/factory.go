@@ -9,6 +9,7 @@ import (
 type Factory interface {
 	NewRetrieveAllResourcesUseCase() *RetrieveAllResources
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
+	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 
 	NewResourcesRepository() resource.Repository
 	NewVendorRepository() resource.Repository
@@ -30,6 +31,13 @@ func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
 func (f *factory) NewRetrieveAllVendorsUseCase() *RetrieveAllVendors {
 	return &RetrieveAllVendors{
 		VendorRepository: f.NewVendorRepository(),
+	}
+}
+
+func (f *factory) NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor {
+	return &RetrieveOneVendor{
+		VendorRepository: f.NewVendorRepository(),
+		VendorID:         vendorID,
 	}
 }
 

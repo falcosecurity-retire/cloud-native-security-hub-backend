@@ -5,16 +5,22 @@ import (
 	"strings"
 )
 
+type Kind string
+
+const (
+	FALCO_RULE Kind = "FalcoRule"
+	VENDOR     Kind = "Vendor"
+)
+
 type Resource struct {
 	ApiVersion  string           `json:"apiVersion" yaml:"apiVersion"`
-	Kind        string           `json:"kind" yaml:"kind"`
+	Kind        Kind             `json:"kind" yaml:"kind"`
 	Vendor      string           `json:"vendor" yaml:"vendor"`
 	Name        string           `json:"name" yaml:"name"`
 	Description string           `json:"description" yaml:"description"`
 	Keywords    []string         `json:"keywords" yaml:"keywords"`
 	Icon        string           `json:"icon" yaml:"icon"`
 	Website     string           `json:"website" yaml:"website"`
-	Location    string           `json:"location" yaml:"location"`
 	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
 	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
 	DashboardID int
@@ -34,7 +40,7 @@ func (r *Resource) Validate() error {
 	if r.ApiVersion == "" {
 		errors = append(errors, "the resource does not have an API Version")
 	}
-	if r.Vendor == "" {
+	if r.Kind != VENDOR && r.Vendor == "" {
 		errors = append(errors, "the resource must be assigned to a vendor")
 	}
 	if len(r.Maintainers) == 0 {

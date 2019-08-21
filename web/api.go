@@ -30,3 +30,14 @@ func retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(resources)
 }
+
+func retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	useCase := factory.NewRetrieveOneVendorUseCase(params.ByName("vendor"))
+	resources, err := useCase.Execute()
+	if err != nil {
+		writer.WriteHeader(500)
+		writer.Write([]byte(err.Error()))
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(writer).Encode(resources)
+}
