@@ -6,7 +6,7 @@ import (
 )
 
 func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
-	path := "../../test/fixtures"
+	path := "../../test/fixtures/resources"
 	fileRepository, _ := NewFile(path)
 
 	resources, _ := fileRepository.All()

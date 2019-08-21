@@ -13,6 +13,8 @@ type Resource struct {
 	Description string           `json:"description" yaml:"description"`
 	Keywords    []string         `json:"keywords" yaml:"keywords"`
 	Icon        string           `json:"icon" yaml:"icon"`
+	Website     string           `json:"website" yaml:"website"`
+	Location    string           `json:"location" yaml:"location"`
 	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
 	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
 	DashboardID int

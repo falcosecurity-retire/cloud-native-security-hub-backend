@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Vendor
+name: Apache
+description: |
+  # Apache Software Foundation
+
+  The Apache Software Foundation is an American non-profit corporation to support Apache software projects,
+  including the Apache HTTP Server. The ASF was formed from the Apache Group and incorporated on March 25, 1999.
+
+  The Apache Software Foundation is a decentralized open source community of developers.
+  The software they produce is distributed under the terms of the Apache License and is free and open-source software (FOSS).
+  The Apache projects are characterized by a collaborative, consensus-based development process and an open and
+  pragmatic software license. Each project is managed by a self-selected team of technical experts who are
+  active contributors to the project.
+
+  The ASF is a meritocracy, implying that membership of the foundation is granted only to volunteers who have
+  actively contributed to Apache projects. The ASF is considered a second generation open-source organization,
+  in that commercial support is provided without the risk of platform lock-in.
+
+  Among the ASF's objectives are: to provide legal protection to volunteers working on Apache projects; to
+  prevent the Apache brand name from being used by other organizations without permission.
+
+  The ASF also holds several ApacheCon conferences each year, highlighting Apache projects and related technology.
+
+  According to ASF, products of Apache software foundation are subject to US export control, in contrast to
+  Free software foundation, which clearly opposes "the application of US export control laws to free software".
+keywords:
+  - web
+icon: https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Apache_Software_Foundation_Logo_%282016%29.svg/2560px-Apache_Software_Foundation_Logo_%282016%29.svg.png
+website: https://apache.org/
+location: Forest Hill, Maryland, U.S.
+maintainers:
+  - name: nestorsalceda
+    email: nestor.salceda@sysdig.com
+  - name: fedebarcelona
+    email: fede.barcelona@sysdig.com

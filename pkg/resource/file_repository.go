@@ -20,7 +20,7 @@ func NewFile(path string) (*file, error) {
 func (f *file) All() (resources []Resource, err error) {
 	err = filepath.Walk(f.Path, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".yaml" {
-			resource, err := f.resourceFromFile(path)
+			resource, err := resourceFromFile(path)
 			if err != nil {
 				return err
 			}
@@ -31,7 +31,7 @@ func (f *file) All() (resources []Resource, err error) {
 	return
 }
 
-func (f *file) resourceFromFile(path string) (resource Resource, err error) {
+func resourceFromFile(path string) (resource Resource, err error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	defer file.Close()
 	if err != nil {
