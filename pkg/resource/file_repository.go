@@ -4,6 +4,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type file struct {
@@ -17,20 +18,40 @@ func NewFile(path string) (*file, error) {
 	return &file{path }, nil
 }
 
-func (f *file) All() (resources []Resource, err error) {
+func (f *file) FindAll() (resources []*Resource, err error) {
 	err = filepath.Walk(f.Path, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".yaml" {
 			resource, err := resourceFromFile(path)
 			if err != nil {
 				return err
 			}
-			resource.ID = resource.Hash()
-			resources = append(resources, resource)
+			resources = append(resources, &resource)
 		}
 		return nil
 	})
 	return
 }
+
+
+func (f *file) FindById(id string) (res *Resource, err error) {
+	idToFind := strings.ToLower(id)
+	err = filepath.Walk(f.Path, func(path string, info os.FileInfo, err error) error {
+		if filepath.Ext(path) == ".yaml" {
+			resource, err := resourceFromFile(path)
+			if err != nil {
+				return err
+			}
+			resourceHash := strings.ToLower(resource.Hash())
+			if resourceHash == idToFind {
+				res = &resource
+				return nil
+			}
+		}
+		return nil
+	})
+	return
+}
+
 
 func resourceFromFile(path string) (resource Resource, err error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0644)

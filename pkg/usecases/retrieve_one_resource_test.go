@@ -8,18 +8,26 @@ import (
 
 type dummyResourcesRepositoryForOne struct{}
 
-func (resources *dummyResourcesRepositoryForOne) All() ([]resource.Resource, error) {
-	return []resource.Resource{
+func (resources *dummyResourcesRepositoryForOne) FindAll() ([]*resource.Resource, error) {
+	return []*resource.Resource{
 		{
-			Kind:       resource.FALCO_RULE,
-			Name:       "Falco profile for Nginx",
-			Vendor:     "Nginx",
+			Kind:   resource.FALCO_RULE,
+			Name:   "Falco profile for Nginx",
+			Vendor: "Nginx",
 		},
 		{
-			Kind:       "GrafanaDashboard",
-			Name:       "Grafana Dashboard for Traefik",
-			Vendor:     "Traefik",
+			Kind:   "GrafanaDashboard",
+			Name:   "Grafana Dashboard for Traefik",
+			Vendor: "Traefik",
 		},
+	}, nil
+}
+
+func (resources *dummyResourcesRepositoryForOne) FindById(id string) (*resource.Resource, error) {
+	return &resource.Resource{
+		Kind:   resource.FALCO_RULE,
+		Name:   "Falco profile for Nginx",
+		Vendor: "Nginx",
 	}, nil
 }
 
@@ -31,11 +39,11 @@ func TestReturnsOneResource(t *testing.T) {
 
 	res, _ := useCase.Execute()
 
-	assert.Equal(t, res, resource.Resource{
-		Kind:       resource.FALCO_RULE,
-		Name:       "Falco profile for Nginx",
-		Vendor:     "Nginx",
-	})
+	assert.Equal(t, &resource.Resource{
+		Kind:   resource.FALCO_RULE,
+		Name:   "Falco profile for Nginx",
+		Vendor: "Nginx",
+	}, res)
 }
 
 func TestReturnsResourceNotFound(t *testing.T) {

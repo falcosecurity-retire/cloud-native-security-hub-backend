@@ -53,10 +53,10 @@ func testRetrieveallSerializedAsJSON(t *testing.T, urlPath, fixturesPath string)
 	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
 	repo, err := resource.NewFile(fixturesPath)
 	assert.Equal(t, nil, err)
-	resources, _ := repo.All()
+	resources, _ := repo.FindAll()
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
-	var result []resource.Resource
+	var result []*resource.Resource
 	body, _ := ioutil.ReadAll(recorder.Body)
 	json.Unmarshal([]byte(body), &result)
 	assert.Equal(t, resources, result)

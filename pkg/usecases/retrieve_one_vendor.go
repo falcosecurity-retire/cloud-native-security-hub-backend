@@ -11,8 +11,8 @@ type RetrieveOneVendor struct {
 	VendorRepository resource.Repository
 }
 
-func (useCase *RetrieveOneVendor) Execute() (res resource.Resource, err error) {
-	vendors, err := useCase.VendorRepository.All()
+func (useCase *RetrieveOneVendor) Execute() (res *resource.Resource, err error) {
+	vendors, err := useCase.VendorRepository.FindAll()
 	if err != nil {
 		return
 	}

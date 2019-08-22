@@ -11,8 +11,8 @@ type RetrieveOneResource struct {
 	Hash               string
 }
 
-func (useCase *RetrieveOneResource) Execute() (res resource.Resource, err error) {
-	resources, err := useCase.ResourceRepository.All()
+func (useCase *RetrieveOneResource) Execute() (res *resource.Resource, err error) {
+	resources, err := useCase.ResourceRepository.FindAll()
 	if err != nil {
 		return
 	}

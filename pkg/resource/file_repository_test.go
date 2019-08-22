@@ -9,13 +9,13 @@ func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
 	path := "../../test/fixtures/resources"
 	fileRepository, _ := NewFile(path)
 
-	resources, _ := fileRepository.All()
+	resources, _ := fileRepository.FindAll()
 
 	assert.Equal(t, buildResourcesFromFixtures(), resources)
 }
 
-func buildResourcesFromFixtures() []Resource {
-	resources := []Resource{
+func buildResourcesFromFixtures() []*Resource {
+	resources := []*Resource{
 		{
 			Kind:        "FalcoRules",
 			Vendor:      "Apache",

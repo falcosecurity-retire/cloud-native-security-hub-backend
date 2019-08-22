@@ -1,5 +1,6 @@
 package resource
 
 type Repository interface {
-	All() ([]Resource, error)
+	FindAll() ([]*Resource, error)
+	FindById(id string) (*Resource, error)
 }
