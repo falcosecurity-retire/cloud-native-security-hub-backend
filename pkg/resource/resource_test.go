@@ -81,6 +81,5 @@ func newResource() Resource {
 				Email: "bencer@sysdig.com",
 			},
 		},
-		DashboardID: 0,
 	}
 }

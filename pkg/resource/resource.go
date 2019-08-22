@@ -28,7 +28,6 @@ type Resource struct {
 	Website     string           `json:"website" yaml:"website"`
 	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
 	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
-	DashboardID int
 }
 
 type resourceAlias Resource // Avoid stack overflow while marshalling / unmarshalling
