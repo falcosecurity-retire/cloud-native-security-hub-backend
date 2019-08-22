@@ -16,7 +16,7 @@ func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 }
 
 func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
-	apacheHash := "C2CH7QOU44ZJ2HC7QJJT"
+	apacheHash := "ijdncmo23ix4j5cgdwwh"
 	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash, "../test/fixtures/resources")
 }
 

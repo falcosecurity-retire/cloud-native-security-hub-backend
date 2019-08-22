@@ -13,14 +13,6 @@ func TestResourceValidateOK(t *testing.T) {
 	assert.NoError(t, resource.Validate())
 }
 
-func TestResourceValidateApiVersion(t *testing.T) {
-	resourceWithoutVersion := newResource()
-
-	resourceWithoutVersion.ApiVersion = ""
-
-	assert.Error(t, resourceWithoutVersion.Validate())
-}
-
 func TestResourceValidateKind(t *testing.T) {
 	resourceWithoutKind := newResource()
 
@@ -55,7 +47,7 @@ func TestResourceValidateIcon(t *testing.T) {
 
 func TestResourceHash(t *testing.T) {
 	resource := newResource()
-	sum := sha1.Sum([]byte(resource.ApiVersion + string(resource.Kind) + resource.Name + resource.Vendor))
+	sum := sha1.Sum([]byte(string(resource.Kind) + resource.Name + resource.Vendor))
 	b32 := base32.StdEncoding.EncodeToString(sum[:])
 	expected := b32[:20]
 
@@ -67,7 +59,6 @@ func TestResourceHash(t *testing.T) {
 
 func newResource() Resource {
 	return Resource{
-		ApiVersion:  "v1",
 		Kind:        "GrafanaDashboard",
 		Vendor:      "Sysdig",
 		Name:        "",

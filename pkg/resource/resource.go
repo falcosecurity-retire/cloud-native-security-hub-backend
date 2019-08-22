@@ -18,7 +18,6 @@ const (
 
 type Resource struct {
 	ID          string           `json:"id,omitempty" yaml:"id,omitempty"`
-	ApiVersion  string           `json:"apiVersion" yaml:"apiVersion"`
 	Kind        Kind             `json:"kind" yaml:"kind"`
 	Vendor      string           `json:"vendor" yaml:"vendor"`
 	Name        string           `json:"name" yaml:"name"`
@@ -77,9 +76,6 @@ func (r *Resource) Validate() error {
 	if r.Kind == "" {
 		errors = append(errors, "the resource must have a defined Kind")
 	}
-	if r.ApiVersion == "" {
-		errors = append(errors, "the resource does not have an API Version")
-	}
 	if r.Kind != VENDOR && r.Vendor == "" {
 		errors = append(errors, "the resource must be assigned to a vendor")
 	}
@@ -98,7 +94,7 @@ func (r *Resource) Validate() error {
 }
 
 func (r *Resource) Hash() string {
-	sum := sha1.Sum([]byte(r.ApiVersion + string(r.Kind) + r.Name + r.Vendor))
+	sum := sha1.Sum([]byte(string(r.Kind) + r.Name + r.Vendor))
 	b32 := base32.StdEncoding.EncodeToString(sum[:])
 	return b32[:20]
 }

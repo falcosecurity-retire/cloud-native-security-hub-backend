@@ -17,7 +17,6 @@ func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
 func buildResourcesFromFixtures() []Resource {
 	resources := []Resource{
 		{
-			ApiVersion:  "v1",
 			Kind:        "FalcoRules",
 			Vendor:      "Apache",
 			Name:        "Apache",
@@ -42,7 +41,6 @@ func buildResourcesFromFixtures() []Resource {
 		},
 
 		{
-			ApiVersion:  "v1",
 			Kind:        "FalcoRules",
 			Vendor:      "Mongo",
 			Name:        "MongoDB",
