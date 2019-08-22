@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"cloud-native-visibility-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 )
 
 type RetrieveAllResources struct {

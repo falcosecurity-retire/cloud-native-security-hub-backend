@@ -1,7 +1,7 @@
 package web
 
 import (
-	"cloud-native-visibility-hub/pkg/usecases"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"net/http"

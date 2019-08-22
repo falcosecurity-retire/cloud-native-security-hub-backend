@@ -1,7 +1,7 @@
 package web
 
 import (
-	"cloud-native-visibility-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"

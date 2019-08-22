@@ -1,4 +1,4 @@
-module cloud-native-visibility-hub
+module github.com/falcosecurity/cloud-native-security-hub
 
 go 1.12
 

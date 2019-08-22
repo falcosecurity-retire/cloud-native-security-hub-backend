@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cloud-native-visibility-hub/web"
+	"github.com/falcosecurity/cloud-native-security-hub/web"
 	"log"
 	"net/http"
 )
