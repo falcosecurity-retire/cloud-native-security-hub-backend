@@ -12,41 +12,55 @@ type Factory interface {
 	NewRetrieveOneResourceUseCase(hash string) *RetrieveOneResource
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
+	NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor
 
 	NewResourcesRepository() resource.Repository
 	NewVendorRepository() vendor.Repository
 }
 
 func NewFactory() Factory {
-	return &factory{}
+	factory := &factory{}
+	factory.resourceRepository = factory.NewResourcesRepository()
+	factory.vendorRepository = factory.NewVendorRepository()
+	return factory
 }
 
 type factory struct {
+	vendorRepository   vendor.Repository
+	resourceRepository resource.Repository
 }
 
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
 	return &RetrieveAllResources{
-		ResourceRepository: f.NewResourcesRepository(),
+		ResourceRepository: f.resourceRepository,
 	}
 }
 
 func (f *factory) NewRetrieveOneResourceUseCase(hash string) *RetrieveOneResource {
 	return &RetrieveOneResource{
-		ResourceRepository: f.NewResourcesRepository(),
+		ResourceRepository: f.resourceRepository,
 		Hash:               hash,
 	}
 }
 
 func (f *factory) NewRetrieveAllVendorsUseCase() *RetrieveAllVendors {
 	return &RetrieveAllVendors{
-		VendorRepository: f.NewVendorRepository(),
+		VendorRepository: f.vendorRepository,
 	}
 }
 
 func (f *factory) NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor {
 	return &RetrieveOneVendor{
-		VendorRepository: f.NewVendorRepository(),
+		VendorRepository: f.vendorRepository,
 		VendorID:         vendorID,
+	}
+}
+
+func (f *factory) NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor {
+	return &RetrieveAllResourcesFromVendor{
+		VendorID:           vendorID,
+		VendorRepository:   f.vendorRepository,
+		ResourceRepository: f.resourceRepository,
 	}
 }
 

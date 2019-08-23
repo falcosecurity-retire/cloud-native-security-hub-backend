@@ -28,6 +28,11 @@ func TestRetrieveOneVendorsHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache")
 }
 
+
+func TestRetrieveAllResourcesFromVendorHandlerReturnsHTTPOk(t *testing.T) {
+	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache/resources")
+}
+
 func testRetrieveAllReturnsHTTPOk(t *testing.T, path string) {
 	request, _ := http.NewRequest("GET", path, nil)
 	recorder := httptest.NewRecorder()
