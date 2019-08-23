@@ -56,7 +56,7 @@ func (f *factory) NewResourcesRepository() resource.Repository {
 		log.Println("The RESOURCES_PATH env var is not set")
 		os.Exit(1)
 	}
-	repo, err := resource.NewFile(resourcesPath)
+	repo, err := resource.FromPath(resourcesPath)
 	if err != nil {
 		log.Println("the resource repository of type file does not exist")
 		os.Exit(1)
@@ -70,7 +70,7 @@ func (f *factory) NewVendorRepository() vendor.Repository {
 		log.Println("The VENDOR_PATH env var is not set")
 		os.Exit(1)
 	}
-	repo, err := vendor.NewFile(vendorPath)
+	repo, err := vendor.FromPath(vendorPath)
 	if err != nil {
 		log.Println("the resource repository of type file does not exist")
 		os.Exit(1)

@@ -7,7 +7,7 @@ import (
 
 func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
 	path := "../../test/fixtures/resources"
-	fileRepository, _ := NewFile(path)
+	fileRepository, _ := FromPath(path)
 
 	resources, _ := fileRepository.FindAll()
 
@@ -75,7 +75,7 @@ func buildResourcesFromFixtures() []*Resource {
 func TestFileRepositoryReturnsAnErrorIfPathDoesNotExist(t *testing.T) {
 	nonExistentPath := "../foo"
 
-	_, err := NewFile(nonExistentPath)
+	_, err := FromPath(nonExistentPath)
 
 	assert.Error(t, err)
 }
