@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 	"log"
 	"os"
 )
@@ -69,7 +70,7 @@ func (f *factory) NewVendorRepository() resource.Repository {
 		log.Println("The VENDOR_PATH env var is not set")
 		os.Exit(1)
 	}
-	repo, err := resource.NewFile(vendorPath)
+	repo, err := vendor.NewFile(vendorPath)
 	if err != nil {
 		log.Println("the resource repository of type file does not exist")
 		os.Exit(1)

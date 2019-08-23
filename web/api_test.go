@@ -1,8 +1,8 @@
 package web
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"encoding/json"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"

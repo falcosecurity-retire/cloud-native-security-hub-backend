@@ -1,8 +1,8 @@
 package web
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 	"encoding/json"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
@@ -19,7 +19,6 @@ func retrieveAllResourcesHandler(writer http.ResponseWriter, request *http.Reque
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(resources)
 }
-
 
 func retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	useCase := factory.NewRetrieveOneResourceUseCase(params.ByName("hash"))

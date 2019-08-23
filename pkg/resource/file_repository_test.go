@@ -33,7 +33,7 @@ func buildResourcesFromFixtures() []*Resource {
 					Email: "fede.barcelona@sysdig.com",
 				},
 			},
-			Rules:       []*FalcoRuleData {
+			Rules: []*FalcoRuleData{
 				{
 					Raw: "- macro: apache_consider_syscalls\n  condition: (evt.num < 0)",
 				},
@@ -57,7 +57,7 @@ func buildResourcesFromFixtures() []*Resource {
 					Email: "fede.barcelona@sysdig.com",
 				},
 			},
-			Rules:       []*FalcoRuleData {
+			Rules: []*FalcoRuleData{
 				{
 					Raw: "- macro: mongo_consider_syscalls\n  condition: (evt.num < 0)",
 				},
