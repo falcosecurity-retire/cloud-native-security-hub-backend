@@ -14,7 +14,7 @@ type Factory interface {
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 
 	NewResourcesRepository() resource.Repository
-	NewVendorRepository() resource.Repository
+	NewVendorRepository() vendor.Repository
 }
 
 func NewFactory() Factory {
@@ -64,7 +64,7 @@ func (f *factory) NewResourcesRepository() resource.Repository {
 	return repo
 }
 
-func (f *factory) NewVendorRepository() resource.Repository {
+func (f *factory) NewVendorRepository() vendor.Repository {
 	vendorPath, ok := os.LookupEnv("VENDOR_PATH")
 	if !ok {
 		log.Println("The VENDOR_PATH env var is not set")

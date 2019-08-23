@@ -2,7 +2,6 @@ package vendor
 
 import (
 	"fmt"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
@@ -20,7 +19,7 @@ func NewFile(path string) (*file, error) {
 	return &file{path}, nil
 }
 
-func (f *file) FindAll() (resources []*resource.Resource, err error) {
+func (f *file) FindAll() (resources []*Resource, err error) {
 	err = filepath.Walk(f.Path, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".yaml" {
 			resource, err := resourceFromFile(path)
@@ -34,7 +33,7 @@ func (f *file) FindAll() (resources []*resource.Resource, err error) {
 	return
 }
 
-func (f *file) FindById(id string) (res *resource.Resource, err error) {
+func (f *file) FindById(id string) (res *Resource, err error) {
 	idToFind := strings.ToLower(id)
 	err = filepath.Walk(f.Path, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".yaml" {
@@ -57,7 +56,7 @@ func (f *file) FindById(id string) (res *resource.Resource, err error) {
 	return
 }
 
-func resourceFromFile(path string) (resource resource.Resource, err error) {
+func resourceFromFile(path string) (resource Resource, err error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	defer file.Close()
 	if err != nil {

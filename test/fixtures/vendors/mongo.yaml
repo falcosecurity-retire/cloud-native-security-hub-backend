@@ -4,12 +4,5 @@ kind: Vendor
 name: Mongo
 description: |
   # MongoDB Inc.
-keywords:
-  - database
 icon: https://upload.wikimedia.org/wikipedia/en/thumb/4/45/MongoDB-Logo.svg/640px-MongoDB-Logo.svg.png
 website: https://mongodb.com/
-maintainers:
-  - name: nestorsalceda
-    email: nestor.salceda@sysdig.com
-  - name: fedebarcelona
-    email: fede.barcelona@sysdig.com

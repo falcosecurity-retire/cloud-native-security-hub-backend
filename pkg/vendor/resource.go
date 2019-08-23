@@ -1,4 +1,4 @@
-package resource
+package vendor
 
 import (
 	"crypto/sha1"
@@ -12,20 +12,16 @@ import (
 type Kind string
 
 const (
-	FALCO_RULE Kind = "FalcoRule"
+	VENDOR Kind = "Vendor"
 )
 
 type Resource struct {
-	ID          string           `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind        Kind             `json:"kind" yaml:"kind"`
-	Vendor      string           `json:"vendor" yaml:"vendor"`
-	Name        string           `json:"name" yaml:"name"`
-	Description string           `json:"description" yaml:"description"`
-	Keywords    []string         `json:"keywords" yaml:"keywords"`
-	Icon        string           `json:"icon" yaml:"icon"`
-	Website     string           `json:"website" yaml:"website"`
-	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
-	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
+	ID          string `json:"id,omitempty" yaml:"id,omitempty"`
+	Kind        Kind   `json:"kind" yaml:"kind"`
+	Name        string `json:"name" yaml:"name"`
+	Description string `json:"description" yaml:"description"`
+	Icon        string `json:"icon" yaml:"icon"`
+	Website     string `json:"website" yaml:"website"`
 }
 
 type resourceAlias Resource // Avoid stack overflow while marshalling / unmarshalling
@@ -64,23 +60,13 @@ func (r *Resource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(x)
 }
 
-type Maintainer struct {
-	Name  string `json:"name" yaml:"name"`
-	Email string `json:"email" yaml:"email"`
-}
-
 func (r *Resource) Validate() error {
 	var errors []string
 
 	if r.Kind == "" {
 		errors = append(errors, "the resource must have a defined Kind")
 	}
-	if r.Vendor == "" {
-		errors = append(errors, "the resource must be assigned to a vendor")
-	}
-	if len(r.Maintainers) == 0 {
-		errors = append(errors, "the resource must have at least one maintainer")
-	}
+
 	if r.Icon == "" {
 		errors = append(errors, "the resource must have a valid icon")
 	}
@@ -93,7 +79,7 @@ func (r *Resource) Validate() error {
 }
 
 func (r *Resource) Hash() string {
-	sum := sha1.Sum([]byte(string(r.Kind) + r.Name + r.Vendor))
+	sum := sha1.Sum([]byte(string(r.Kind) + r.Name + r.Description))
 	b32 := base32.StdEncoding.EncodeToString(sum[:])
 	return b32[:20]
 }
