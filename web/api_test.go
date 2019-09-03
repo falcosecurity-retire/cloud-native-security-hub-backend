@@ -11,6 +11,13 @@ import (
 	"testing"
 )
 
+func TestMain(m *testing.M) {
+	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
+	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
+
+	m.Run()
+}
+
 func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/resources")
 }
@@ -28,7 +35,6 @@ func TestRetrieveOneVendorsHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache")
 }
 
-
 func TestRetrieveAllResourcesFromVendorHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache/resources")
 }
@@ -36,10 +42,10 @@ func TestRetrieveAllResourcesFromVendorHandlerReturnsHTTPOk(t *testing.T) {
 func testRetrieveAllReturnsHTTPOk(t *testing.T, path string) {
 	request, _ := http.NewRequest("GET", path, nil)
 	recorder := httptest.NewRecorder()
-	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
-	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
+
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
+
 	assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
@@ -52,15 +58,14 @@ func TestRetrieveAllVendorsHandlerReturnsResourcesSerializedAsJSON(t *testing.T)
 }
 
 func testRetrieveallSerializedAsJSON(t *testing.T, urlPath, fixturesPath string) {
+	repo, _ := resource.FromPath(fixturesPath)
+	resources, _ := repo.FindAll()
+
 	request, _ := http.NewRequest("GET", urlPath, nil)
 	recorder := httptest.NewRecorder()
-	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
-	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
-	repo, err := resource.FromPath(fixturesPath)
-	assert.Equal(t, nil, err)
-	resources, _ := repo.FindAll()
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
+
 	var result []*resource.Resource
 	body, _ := ioutil.ReadAll(recorder.Body)
 	json.Unmarshal([]byte(body), &result)
@@ -77,15 +82,9 @@ func TestRetrieveAllVendorHandlerReturnsAJSONResponse(t *testing.T) {
 func testRetrieveAllHandlerReturnsAJSONResponse(t *testing.T, urlPath string) {
 	request, _ := http.NewRequest("GET", urlPath, nil)
 	recorder := httptest.NewRecorder()
-	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
-	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
+
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
-	assert.Equal(t, jsonHeader(), recorder.HeaderMap)
-}
 
-func jsonHeader() http.Header {
-	jsonHeader := http.Header{}
-	jsonHeader.Set("Content-Type", "application/json")
-	return jsonHeader
+	assert.Equal(t, "application/json", recorder.HeaderMap["Content-Type"][0])
 }

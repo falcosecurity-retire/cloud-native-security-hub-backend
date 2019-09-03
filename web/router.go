@@ -2,12 +2,15 @@ package web
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"github.com/rs/cors"
+	"net/http"
 )
 
-func NewRouter() *httprouter.Router {
+func NewRouter() http.Handler {
 	router := httprouter.New()
 	registerOn(router)
-	return router
+
+	return cors.Default().Handler(router)
 }
 
 func registerOn(router *httprouter.Router) {
