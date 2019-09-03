@@ -23,7 +23,9 @@ spec:
         image: gcr.io/mateo-burillo-ns/cnvh-backend:latest
         env:
           - name: RESOURCES_PATH
-            value: /resources
+            value: /resources/resources
+          - name: VENDOR_PATH
+            value: /resources/vendors
         ports:
         - containerPort: 8080
         volumeMounts:

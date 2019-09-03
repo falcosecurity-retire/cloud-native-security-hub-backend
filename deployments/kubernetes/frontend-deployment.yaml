@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cnvh-frontend-deployment
+  namespace: cnvh
+  labels:
+    app: cnvh-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cnvh-frontend
+  template:
+    metadata:
+      labels:
+        app: cnvh-frontend
+    spec:
+      containers:
+      - name: cnvh-frontend
+        image: gcr.io/mateo-burillo-ns/cnvh-frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: BASE_URL
+            value: http://35.225.102.147
