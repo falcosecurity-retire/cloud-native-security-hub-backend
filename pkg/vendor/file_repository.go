@@ -32,7 +32,6 @@ func (f *file) FindById(id string) (res *Resource, err error) {
 	f.resourcesCacheFilledOnce.Do(f.fillResourcesCache)
 	idToFind := strings.ToLower(id)
 
-
 	if f.resourcesCacheError != nil {
 		return nil, f.resourcesCacheError
 	}
@@ -42,9 +41,7 @@ func (f *file) FindById(id string) (res *Resource, err error) {
 	}
 
 	for _, resource := range f.resourcesCache {
-		resourceHash := strings.ToLower(resource.Hash())
-		resourceName := strings.ToLower(resource.Name)
-		if resourceHash == idToFind || resourceName == idToFind {
+		if resource.ID == idToFind {
 			res = resource
 			return
 		}

@@ -13,9 +13,11 @@ type dummyVendorRepository struct{}
 func (resources *dummyVendorRepository) FindAll() ([]*vendor.Resource, error) {
 	return []*vendor.Resource{
 		{
+			ID:   "apache",
 			Name: "Apache",
 		},
 		{
+			ID:   "nginx",
 			Name: "Nginx",
 		},
 	}, nil
@@ -28,9 +30,7 @@ func (resources *dummyVendorRepository) FindById(id string) (*vendor.Resource, e
 	}
 	idToFind := strings.ToLower(id)
 	for _, res := range all {
-		resName := strings.ToLower(res.Name)
-		resHash := strings.ToLower(res.Hash())
-		if resName == idToFind || resHash == idToFind {
+		if res.ID == idToFind {
 			return res, nil
 		}
 	}
@@ -46,6 +46,7 @@ func TestReturnsOneVendorByName(t *testing.T) {
 	res, _ := useCase.Execute()
 
 	assert.Equal(t, &vendor.Resource{
+		ID:   "apache",
 		Name: "Apache",
 	}, res)
 }
@@ -57,7 +58,7 @@ func TestReturnsOneVendorByHash(t *testing.T) {
 
 	useCase := RetrieveOneVendor{
 		VendorRepository: repository,
-		VendorID:         expected.Hash(),
+		VendorID:         expected.ID,
 	}
 
 	res, _ := useCase.Execute()

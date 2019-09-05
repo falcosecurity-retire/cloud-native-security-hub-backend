@@ -1,8 +1,6 @@
 package vendor
 
 import (
-	"crypto/sha1"
-	"encoding/base32"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -16,7 +14,7 @@ const (
 )
 
 type Resource struct {
-	ID          string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID          string `json:"id,omitempty" yaml:"-"`
 	Kind        Kind   `json:"kind" yaml:"kind"`
 	Name        string `json:"name" yaml:"name"`
 	Description string `json:"description" yaml:"description"`
@@ -33,13 +31,13 @@ func (r *Resource) UnmarshalYAML(unmarshal func(interface{}) error) (err error) 
 		return
 	}
 	*r = Resource(res)
-	r.ID = r.Hash()
+	r.ID = r.generateID()
 	return
 }
 
 func (r *Resource) MarshalYAML() (interface{}, error) {
 	x := resourceAlias(*r)
-	x.ID = r.Hash()
+	r.ID = r.generateID()
 	return yaml.Marshal(x)
 }
 
@@ -50,13 +48,13 @@ func (r *Resource) UnmarshalJSON(data []byte) (err error) {
 		return
 	}
 	*r = Resource(res)
-	r.ID = r.Hash()
+	r.ID = r.generateID()
 	return
 }
 
 func (r *Resource) MarshalJSON() ([]byte, error) {
 	x := resourceAlias(*r)
-	x.ID = r.Hash()
+	r.ID = r.generateID()
 	return json.Marshal(x)
 }
 
@@ -78,8 +76,6 @@ func (r *Resource) Validate() error {
 	return nil
 }
 
-func (r *Resource) Hash() string {
-	sum := sha1.Sum([]byte(string(r.Kind) + r.Name + r.Description))
-	b32 := base32.StdEncoding.EncodeToString(sum[:])
-	return b32[:20]
+func (r *Resource) generateID() string {
+	return strings.ToLower(r.Name)
 }
