@@ -10,6 +10,7 @@ import (
 type HandlerRepository interface {
 	retrieveAllResourcesHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	retrieveOneResourcesRawHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveAllResourcesFromVendorHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
@@ -46,6 +47,20 @@ func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWrit
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(resources)
 }
+
+
+func (h *handlerRepository) retrieveOneResourcesRawHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	useCase := h.factory.NewRetrieveOneRawResourceUseCase(params.ByName("hash"))
+	content, err := useCase.Execute()
+	if err != nil {
+		writer.WriteHeader(500)
+		writer.Write([]byte(err.Error()))
+	}
+	writer.Header().Set("Content-Type", "application/octet-stream")
+	writer.Write(content)
+}
+
+
 func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	useCase := h.factory.NewRetrieveAllVendorsUseCase()
 	resources, err := useCase.Execute()

@@ -27,6 +27,11 @@ func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID)
 }
 
+func TestRetrieveOneRawResourceHandlerReturnsHTTPOk(t *testing.T) {
+	apacheHash := "apache"
+	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash+"/raw")
+}
+
 func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/vendors")
 }
@@ -85,6 +90,19 @@ func testRetrieveAllHandlerReturnsAJSONResponse(t *testing.T, urlPath string) {
 
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
-
 	assert.Equal(t, "application/json", recorder.HeaderMap["Content-Type"][0])
+}
+
+func TestRetrieveOneRawReturnsTheContent(t *testing.T) {
+	apacheID := "apache"
+	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/raw", nil)
+
+	recorder := httptest.NewRecorder()
+	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
+	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
+	router := NewRouter()
+	router.ServeHTTP(recorder, request)
+
+	expectedResult := []byte("- macro: apache_consider_syscalls\n  condition: (evt.num < 0)")
+	assert.Equal(t, expectedResult, recorder.Body.Bytes())
 }

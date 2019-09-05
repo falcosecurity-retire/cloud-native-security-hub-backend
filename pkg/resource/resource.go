@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -24,6 +25,14 @@ type Resource struct {
 	Website     string           `json:"website" yaml:"website"`
 	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
 	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
+}
+
+func (r *Resource) Raw() []byte {
+	buffer := bytes.Buffer{}
+	for _, rule := range r.Rules {
+		buffer.Write([]byte(rule.Raw))
+	}
+	return buffer.Bytes()
 }
 
 type resourceAlias Resource // Avoid stack overflow while marshalling / unmarshalling
