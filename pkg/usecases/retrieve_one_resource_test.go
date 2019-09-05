@@ -16,11 +16,13 @@ func (resources *dummyResourcesRepositoryForOne) FindAll() ([]*resource.Resource
 			Kind:   resource.FALCO_RULE,
 			Name:   "Falco profile for Nginx",
 			Vendor: "Nginx",
+			ID:     "nginx",
 		},
 		{
 			Kind:   "GrafanaDashboard",
 			Name:   "Grafana Dashboard for Traefik",
 			Vendor: "Traefik",
+			ID:     "traefik",
 		},
 	}, nil
 }
@@ -32,9 +34,7 @@ func (resources *dummyResourcesRepositoryForOne) FindById(id string) (*resource.
 	}
 	idToFind := strings.ToLower(id)
 	for _, res := range all {
-		resName := strings.ToLower(res.Name)
-		resHash := strings.ToLower(res.Hash())
-		if resName == idToFind || resHash == idToFind {
+		if res.ID == idToFind {
 			return res, nil
 		}
 	}
@@ -44,7 +44,7 @@ func (resources *dummyResourcesRepositoryForOne) FindById(id string) (*resource.
 func TestReturnsOneResource(t *testing.T) {
 	useCase := RetrieveOneResource{
 		ResourceRepository: &dummyResourcesRepositoryForOne{},
-		Hash:               "bekiisotdwhvmetchrwp",
+		Hash:               "nginx",
 	}
 
 	res, _ := useCase.Execute()
@@ -53,6 +53,7 @@ func TestReturnsOneResource(t *testing.T) {
 		Kind:   resource.FALCO_RULE,
 		Name:   "Falco profile for Nginx",
 		Vendor: "Nginx",
+		ID:     "nginx",
 	}, res)
 }
 

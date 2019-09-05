@@ -43,15 +43,6 @@ func TestResourceValidateIcon(t *testing.T) {
 	assert.Error(t, resourceWithoutIcon.Validate())
 }
 
-func TestResourceHash(t *testing.T) {
-	expected := "7VOJZXCQJ6ZHAOIZEJAE"
-
-	resource := newResource()
-	result := resource.Hash()
-
-	assert.Equal(t, expected, result)
-}
-
 func newResource() Resource {
 	return Resource{
 		Kind:        "GrafanaDashboard",

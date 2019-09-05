@@ -23,8 +23,8 @@ func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 }
 
 func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
-	apacheHash := "ijdncmo23ix4j5cgdwwh"
-	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash)
+	apacheID := "apache"
+	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID)
 }
 
 func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {

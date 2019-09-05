@@ -1,8 +1,6 @@
 package resource
 
 import (
-	"crypto/sha1"
-	"encoding/base32"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -37,13 +35,13 @@ func (r *Resource) UnmarshalYAML(unmarshal func(interface{}) error) (err error) 
 		return
 	}
 	*r = Resource(res)
-	r.ID = r.Hash()
+	r.ID = r.generateID()
 	return
 }
 
 func (r *Resource) MarshalYAML() (interface{}, error) {
 	x := resourceAlias(*r)
-	x.ID = r.Hash()
+	x.ID = r.generateID()
 	return yaml.Marshal(x)
 }
 
@@ -54,19 +52,23 @@ func (r *Resource) UnmarshalJSON(data []byte) (err error) {
 		return
 	}
 	*r = Resource(res)
-	r.ID = r.Hash()
+	r.ID = r.generateID()
 	return
 }
 
 func (r *Resource) MarshalJSON() ([]byte, error) {
 	x := resourceAlias(*r)
-	x.ID = r.Hash()
+	x.ID = r.generateID()
 	return json.Marshal(x)
 }
 
 type Maintainer struct {
 	Name  string `json:"name" yaml:"name"`
 	Email string `json:"email" yaml:"email"`
+}
+
+type FalcoRuleData struct {
+	Raw string `json:"raw" yaml:"raw"`
 }
 
 func (r *Resource) Validate() error {
@@ -92,8 +94,6 @@ func (r *Resource) Validate() error {
 	return nil
 }
 
-func (r *Resource) Hash() string {
-	sum := sha1.Sum([]byte(string(r.Kind) + r.Name + r.Vendor))
-	b32 := base32.StdEncoding.EncodeToString(sum[:])
-	return b32[:20]
+func (r *Resource) generateID() string {
+	return strings.ToLower(r.Name)
 }

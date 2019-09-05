@@ -17,6 +17,7 @@ func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
 func buildResourcesFromFixtures() []*Resource {
 	resources := []*Resource{
 		{
+			ID:          "apache",
 			Kind:        "FalcoRules",
 			Vendor:      "Apache",
 			Name:        "Apache",
@@ -43,6 +44,7 @@ func buildResourcesFromFixtures() []*Resource {
 		{
 			Kind:        "FalcoRules",
 			Vendor:      "Mongo",
+			ID:          "mongodb",
 			Name:        "MongoDB",
 			Description: "# MongoDB Falco Rules\n",
 			Keywords:    []string{"database"},
@@ -63,10 +65,6 @@ func buildResourcesFromFixtures() []*Resource {
 				},
 			},
 		},
-	}
-
-	for i := range resources {
-		resources[i].ID = resources[i].Hash()
 	}
 
 	return resources

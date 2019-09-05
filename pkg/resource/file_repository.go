@@ -42,8 +42,7 @@ func (f *file) FindById(id string) (res *Resource, err error) {
 	}
 
 	for _, resource := range f.resourcesCache {
-		resourceHash := strings.ToLower(resource.Hash())
-		if resourceHash == idToFind {
+		if resource.ID == idToFind {
 			res = resource
 			return
 		}

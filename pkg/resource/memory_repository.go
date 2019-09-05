@@ -16,7 +16,7 @@ func (r *Memory) FindAll() ([]*Resource, error) {
 func (r *Memory) FindById(id string) (*Resource, error) {
 	idToFind := strings.ToLower(id)
 	for _, res := range r.resources {
-		if strings.ToLower(res.Hash()) == idToFind {
+		if res.ID == idToFind {
 			return res, nil
 		}
 	}
