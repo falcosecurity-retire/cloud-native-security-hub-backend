@@ -7,10 +7,10 @@ type RetrieveOneRawResource struct {
 	Hash               string
 }
 
-func (useCase *RetrieveOneRawResource) Execute() (raw []byte, err error) {
+func (useCase *RetrieveOneRawResource) Execute() (raw resource.Raw, err error) {
 	res, err := useCase.ResourceRepository.FindById(useCase.Hash)
 	if err != nil {
 		return
 	}
-	return res.Raw(), nil
+	return res, nil
 }

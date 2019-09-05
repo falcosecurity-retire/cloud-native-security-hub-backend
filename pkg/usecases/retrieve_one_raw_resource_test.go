@@ -55,7 +55,7 @@ func TestReturnsOneRawResource(t *testing.T) {
 
 	res, _ := useCase.Execute()
 
-	assert.Equal(t, []byte("nginxRule"), res)
+	assert.Equal(t, []byte("nginxRule"), res.Raw())
 }
 
 func TestReturnsResourceRawNotFound(t *testing.T) {

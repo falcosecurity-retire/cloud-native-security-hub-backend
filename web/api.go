@@ -57,7 +57,7 @@ func (h *handlerRepository) retrieveOneResourcesRawHandler(writer http.ResponseW
 		writer.Write([]byte(err.Error()))
 	}
 	writer.Header().Set("Content-Type", "application/octet-stream")
-	writer.Write(content)
+	writer.Write(content.Raw())
 }
 
 
