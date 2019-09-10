@@ -17,7 +17,7 @@ func registerOn(router *httprouter.Router) {
 	h := NewHandlerRepository()
 	router.GET("/resources", h.retrieveAllResourcesHandler)
 	router.GET("/resources/:hash", h.retrieveOneResourcesHandler)
-	router.GET("/resources/:hash/raw", h.retrieveOneResourcesRawHandler)
+	router.GET("/resources/:hash/raw.yaml", h.retrieveOneResourcesRawHandler)
 	router.GET("/vendors", h.retrieveAllVendorsHandler)
 	router.GET("/vendors/:vendor", h.retrieveOneVendorsHandler)
 	router.GET("/vendors/:vendor/resources", h.retrieveAllResourcesFromVendorHandler)

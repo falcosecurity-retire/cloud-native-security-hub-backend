@@ -56,7 +56,7 @@ func (h *handlerRepository) retrieveOneResourcesRawHandler(writer http.ResponseW
 		writer.WriteHeader(500)
 		writer.Write([]byte(err.Error()))
 	}
-	writer.Header().Set("Content-Type", "application/octet-stream")
+	writer.Header().Set("Content-Type", "application/x-yaml")
 	writer.Write(content.Raw())
 }
 

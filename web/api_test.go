@@ -29,7 +29,7 @@ func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
 
 func TestRetrieveOneRawResourceHandlerReturnsHTTPOk(t *testing.T) {
 	apacheHash := "apache"
-	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash+"/raw")
+	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash+"/raw.yaml")
 }
 
 func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {
@@ -95,7 +95,7 @@ func testRetrieveAllHandlerReturnsAJSONResponse(t *testing.T, urlPath string) {
 
 func TestRetrieveOneRawReturnsTheContent(t *testing.T) {
 	apacheID := "apache"
-	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/raw", nil)
+	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/raw.yaml", nil)
 
 	recorder := httptest.NewRecorder()
 	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
@@ -105,4 +105,14 @@ func TestRetrieveOneRawReturnsTheContent(t *testing.T) {
 
 	expectedResult := []byte("- macro: apache_consider_syscalls\n  condition: (evt.num < 0)")
 	assert.Equal(t, expectedResult, recorder.Body.Bytes())
+}
+
+func TestRetrieveOneRawHandlerReturnsAYAMLResponse(t *testing.T) {
+	apacheID := "apache"
+	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/raw.yaml", nil)
+	recorder := httptest.NewRecorder()
+
+	router := NewRouter()
+	router.ServeHTTP(recorder, request)
+	assert.Equal(t, "application/x-yaml", recorder.HeaderMap["Content-Type"][0])
 }
