@@ -6,9 +6,9 @@ import (
 
 type RetrieveOneResource struct {
 	ResourceRepository resource.Repository
-	Hash               string
+	ResourceID         string
 }
 
 func (useCase *RetrieveOneResource) Execute() (res *resource.Resource, err error) {
-	return useCase.ResourceRepository.FindById(useCase.Hash)
+	return useCase.ResourceRepository.FindById(useCase.ResourceID)
 }

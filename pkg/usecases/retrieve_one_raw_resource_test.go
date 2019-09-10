@@ -38,9 +38,9 @@ func (resources *dummyResourcesRepositoryForOneRaw) FindById(id string) (*resour
 	}
 	idToFind := strings.ToLower(id)
 	for _, res := range all {
-		resName := strings.ToLower(res.Name)
-		resHash := strings.ToLower(res.ID)
-		if resName == idToFind || resHash == idToFind {
+		resourceName := strings.ToLower(res.Name)
+		resourceID := strings.ToLower(res.ID)
+		if resourceName == idToFind || resourceID == idToFind {
 			return res, nil
 		}
 	}
@@ -50,7 +50,7 @@ func (resources *dummyResourcesRepositoryForOneRaw) FindById(id string) (*resour
 func TestReturnsOneRawResource(t *testing.T) {
 	useCase := RetrieveOneRawResource{
 		ResourceRepository: &dummyResourcesRepositoryForOneRaw{},
-		Hash:               "Falco profile for Nginx",
+		ResourceID:         "Falco profile for Nginx",
 	}
 
 	res, _ := useCase.Execute()
@@ -61,7 +61,7 @@ func TestReturnsOneRawResource(t *testing.T) {
 func TestReturnsResourceRawNotFound(t *testing.T) {
 	useCase := RetrieveOneRawResource{
 		ResourceRepository: &dummyResourcesRepositoryForOneRaw{},
-		Hash:               "notFound",
+		ResourceID:         "notFound",
 	}
 
 	_, err := useCase.Execute()

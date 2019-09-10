@@ -44,7 +44,7 @@ func (resources *dummyResourcesRepositoryForOne) FindById(id string) (*resource.
 func TestReturnsOneResource(t *testing.T) {
 	useCase := RetrieveOneResource{
 		ResourceRepository: &dummyResourcesRepositoryForOne{},
-		Hash:               "nginx",
+		ResourceID:         "nginx",
 	}
 
 	res, _ := useCase.Execute()
@@ -60,7 +60,7 @@ func TestReturnsOneResource(t *testing.T) {
 func TestReturnsResourceNotFound(t *testing.T) {
 	useCase := RetrieveOneResource{
 		ResourceRepository: &dummyResourcesRepositoryForOne{},
-		Hash:               "notFound",
+		ResourceID:         "notFound",
 	}
 
 	_, err := useCase.Execute()

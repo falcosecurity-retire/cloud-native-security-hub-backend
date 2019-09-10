@@ -9,8 +9,8 @@ import (
 
 type Factory interface {
 	NewRetrieveAllResourcesUseCase() *RetrieveAllResources
-	NewRetrieveOneResourceUseCase(hash string) *RetrieveOneResource
-	NewRetrieveOneRawResourceUseCase(hash string) *RetrieveOneRawResource
+	NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneResource
+	NewRetrieveOneRawResourceUseCase(resourceID string) *RetrieveOneRawResource
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 	NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor
@@ -37,17 +37,17 @@ func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
 	}
 }
 
-func (f *factory) NewRetrieveOneResourceUseCase(hash string) *RetrieveOneResource {
+func (f *factory) NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneResource {
 	return &RetrieveOneResource{
 		ResourceRepository: f.resourceRepository,
-		Hash:               hash,
+		ResourceID:         resourceID,
 	}
 }
 
-func (f *factory) NewRetrieveOneRawResourceUseCase(hash string) *RetrieveOneRawResource {
+func (f *factory) NewRetrieveOneRawResourceUseCase(resourceID string) *RetrieveOneRawResource {
 	return &RetrieveOneRawResource{
 		ResourceRepository: f.resourceRepository,
-		Hash:               hash,
+		ResourceID:         resourceID,
 	}
 }
 

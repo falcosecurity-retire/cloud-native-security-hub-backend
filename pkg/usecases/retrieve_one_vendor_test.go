@@ -51,7 +51,7 @@ func TestReturnsOneVendorByName(t *testing.T) {
 	}, res)
 }
 
-func TestReturnsOneVendorByHash(t *testing.T) {
+func TestReturnsOneVendorByID(t *testing.T) {
 	repository := &dummyVendorRepository{}
 	all, _ := repository.FindAll()
 	expected := all[0]
