@@ -1,6 +1,6 @@
 package vendor
 
 type Repository interface {
-	FindAll() ([]*Resource, error)
-	FindById(id string) (*Resource, error)
+	FindAll() ([]*Vendor, error)
+	FindById(id string) (*Vendor, error)
 }

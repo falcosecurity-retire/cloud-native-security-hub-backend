@@ -5,17 +5,17 @@ import (
 	"testing"
 )
 
-func TestFileRepositoryWalksADirectoryAndExtractResources(t *testing.T) {
+func TestFileRepositoryWalksADirectoryAndExtractVendors(t *testing.T) {
 	path := "../../test/fixtures/vendors"
 	vendorRepository, _ := FromPath(path)
 
-	resources, _ := vendorRepository.FindAll()
+	vendors, _ := vendorRepository.FindAll()
 
-	assert.Equal(t, buildResourcesFromFixtures(), resources)
+	assert.Equal(t, buildVendorsFromFixtures(), vendors)
 }
 
-func buildResourcesFromFixtures() []*Resource {
-	resources := []*Resource{
+func buildVendorsFromFixtures() []*Vendor {
+	return []*Vendor{
 		{
 			ID:          "apache",
 			Kind:        "Vendor",
@@ -34,8 +34,6 @@ func buildResourcesFromFixtures() []*Resource {
 			Website:     "https://mongodb.com/",
 		},
 	}
-
-	return resources
 }
 
 func TestFileRepositoryReturnsAnErrorIfPathDoesNotExist(t *testing.T) {

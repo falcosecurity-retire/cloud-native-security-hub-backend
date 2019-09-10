@@ -8,8 +8,8 @@ import (
 
 type dummyVendorsRepository struct{}
 
-func (resources *dummyVendorsRepository) FindAll() ([]*vendor.Resource, error) {
-	return []*vendor.Resource{
+func (resources *dummyVendorsRepository) FindAll() ([]*vendor.Vendor, error) {
+	return []*vendor.Vendor{
 		{
 			Name: "Apache",
 		},
@@ -18,8 +18,8 @@ func (resources *dummyVendorsRepository) FindAll() ([]*vendor.Resource, error) {
 		},
 	}, nil
 }
-func (resources *dummyVendorsRepository) FindById(id string) (*vendor.Resource, error) {
-	return &vendor.Resource{
+func (resources *dummyVendorsRepository) FindById(id string) (*vendor.Vendor, error) {
+	return &vendor.Vendor{
 		Name: "Apache",
 	}, nil
 }
@@ -31,7 +31,7 @@ func TestReturnsAllVendors(t *testing.T) {
 
 	resources, _ := useCase.Execute()
 
-	assert.Equal(t, resources, []*vendor.Resource{
+	assert.Equal(t, resources, []*vendor.Vendor{
 		{
 			Name: "Apache",
 		},

@@ -30,8 +30,8 @@ func (resources *dummyResourcesFromVendor_Resources) FindById(id string) (*resou
 
 type dummyResourcesFromVendor_Vendors struct{}
 
-func (resources *dummyResourcesFromVendor_Vendors) FindAll() ([]*vendor.Resource, error) {
-	return []*vendor.Resource{
+func (resources *dummyResourcesFromVendor_Vendors) FindAll() ([]*vendor.Vendor, error) {
+	return []*vendor.Vendor{
 		{
 			Name: "Apache",
 		},
@@ -43,8 +43,8 @@ func (resources *dummyResourcesFromVendor_Vendors) FindAll() ([]*vendor.Resource
 		},
 	}, nil
 }
-func (resources *dummyResourcesFromVendor_Vendors) FindById(id string) (*vendor.Resource, error) {
-	return &vendor.Resource{
+func (resources *dummyResourcesFromVendor_Vendors) FindById(id string) (*vendor.Vendor, error) {
+	return &vendor.Vendor{
 		Name: id,
 	}, nil
 }

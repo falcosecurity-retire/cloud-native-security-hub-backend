@@ -10,10 +10,10 @@ import (
 )
 
 type fileRepository struct {
-	path                     string
-	resourcesCache           []*Resource
-	resourcesCacheFilledOnce sync.Once
-	resourcesCacheError      error
+	path                   string
+	vendors                []*Vendor
+	vendorsCacheFilledOnce sync.Once
+	vendorsCacheError      error
 }
 
 func FromPath(path string) (*fileRepository, error) {
@@ -23,42 +23,40 @@ func FromPath(path string) (*fileRepository, error) {
 	return &fileRepository{path: path}, nil
 }
 
-func (f *fileRepository) FindAll() (resources []*Resource, err error) {
-	f.resourcesCacheFilledOnce.Do(f.fillResourcesCache)
-	return f.resourcesCache, f.resourcesCacheError
+func (f *fileRepository) FindAll() (vendors []*Vendor, err error) {
+	f.vendorsCacheFilledOnce.Do(f.fillVendorsCache)
+	return f.vendors, f.vendorsCacheError
 }
 
-func (f *fileRepository) FindById(id string) (res *Resource, err error) {
-	f.resourcesCacheFilledOnce.Do(f.fillResourcesCache)
+func (f *fileRepository) FindById(id string) (*Vendor, error) {
+	f.vendorsCacheFilledOnce.Do(f.fillVendorsCache)
 	idToFind := strings.ToLower(id)
 
-	if f.resourcesCacheError != nil {
-		return nil, f.resourcesCacheError
+	if f.vendorsCacheError != nil {
+		return nil, f.vendorsCacheError
 	}
 
-	if len(f.resourcesCache) == 0 {
-		return nil, fmt.Errorf("no resources")
+	if len(f.vendors) == 0 {
+		return nil, fmt.Errorf("no vendors")
 	}
 
-	for _, resource := range f.resourcesCache {
-		if resource.ID == idToFind {
-			res = resource
-			return
+	for _, vendor := range f.vendors {
+		if vendor.ID == idToFind {
+			return vendor, nil
 		}
 	}
 
-	err = fmt.Errorf("not found")
-	return
+	return nil, fmt.Errorf("not found")
 }
 
-func resourceFromFile(path string) (resource Resource, err error) {
+func vendorFromFile(path string) (vendor Vendor, err error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	defer file.Close()
 	if err != nil {
 		return
 	}
 
-	err = yaml.NewDecoder(file).Decode(&resource)
+	err = yaml.NewDecoder(file).Decode(&vendor)
 	if err != nil {
 		return
 	}
@@ -66,17 +64,17 @@ func resourceFromFile(path string) (resource Resource, err error) {
 	return
 }
 
-func (f *fileRepository) fillResourcesCache() {
-	var resources []*Resource
-	f.resourcesCacheError = filepath.Walk(f.path, func(path string, info os.FileInfo, err error) error {
+func (f *fileRepository) fillVendorsCache() {
+	var vendors []*Vendor
+	f.vendorsCacheError = filepath.Walk(f.path, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".yaml" {
-			resource, err := resourceFromFile(path)
+			vendor, err := vendorFromFile(path)
 			if err != nil {
 				return err
 			}
-			resources = append(resources, &resource)
+			vendors = append(vendors, &vendor)
 		}
 		return nil
 	})
-	f.resourcesCache = resources
+	f.vendors = vendors
 }

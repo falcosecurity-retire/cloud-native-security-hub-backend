@@ -6,6 +6,6 @@ type RetrieveAllVendors struct {
 	VendorRepository vendor.Repository
 }
 
-func (useCase *RetrieveAllVendors) Execute() ([]*vendor.Resource, error) {
+func (useCase *RetrieveAllVendors) Execute() ([]*vendor.Vendor, error) {
 	return useCase.VendorRepository.FindAll()
 }

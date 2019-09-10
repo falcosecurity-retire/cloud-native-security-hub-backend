@@ -13,7 +13,7 @@ const (
 	VENDOR Kind = "Vendor"
 )
 
-type Resource struct {
+type Vendor struct {
 	ID          string `json:"id,omitempty" yaml:"-"`
 	Kind        Kind   `json:"kind" yaml:"kind"`
 	Name        string `json:"name" yaml:"name"`
@@ -22,51 +22,51 @@ type Resource struct {
 	Website     string `json:"website" yaml:"website"`
 }
 
-type resourceAlias Resource // Avoid stack overflow while marshalling / unmarshalling
+type vendorAlias Vendor // Avoid stack overflow while marshalling / unmarshalling
 
-func (r *Resource) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
-	res := resourceAlias{}
+func (r *Vendor) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
+	res := vendorAlias{}
 	err = unmarshal(&res)
 	if err != nil {
 		return
 	}
-	*r = Resource(res)
+	*r = Vendor(res)
 	r.ID = r.generateID()
 	return
 }
 
-func (r *Resource) MarshalYAML() (interface{}, error) {
-	x := resourceAlias(*r)
+func (r *Vendor) MarshalYAML() (interface{}, error) {
+	x := vendorAlias(*r)
 	r.ID = r.generateID()
 	return yaml.Marshal(x)
 }
 
-func (r *Resource) UnmarshalJSON(data []byte) (err error) {
-	res := resourceAlias{}
+func (r *Vendor) UnmarshalJSON(data []byte) (err error) {
+	res := vendorAlias{}
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
 	}
-	*r = Resource(res)
+	*r = Vendor(res)
 	r.ID = r.generateID()
 	return
 }
 
-func (r *Resource) MarshalJSON() ([]byte, error) {
-	x := resourceAlias(*r)
+func (r *Vendor) MarshalJSON() ([]byte, error) {
+	x := vendorAlias(*r)
 	r.ID = r.generateID()
 	return json.Marshal(x)
 }
 
-func (r *Resource) Validate() error {
+func (r *Vendor) Validate() error {
 	var errors []string
 
 	if r.Kind == "" {
-		errors = append(errors, "the resource must have a defined Kind")
+		errors = append(errors, "the vendor must have a defined Kind")
 	}
 
 	if r.Icon == "" {
-		errors = append(errors, "the resource must have a valid icon")
+		errors = append(errors, "the vendor must have a valid icon")
 	}
 
 	if len(errors) > 0 {
@@ -76,6 +76,6 @@ func (r *Resource) Validate() error {
 	return nil
 }
 
-func (r *Resource) generateID() string {
+func (r *Vendor) generateID() string {
 	return strings.ToLower(r.Name)
 }
