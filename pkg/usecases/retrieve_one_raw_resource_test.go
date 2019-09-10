@@ -1,66 +1,50 @@
 package usecases
 
 import (
-	"fmt"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
-type dummyResourcesRepositoryForOneRaw struct{}
-
-func (resources *dummyResourcesRepositoryForOneRaw) FindAll() ([]*resource.Resource, error) {
-	return []*resource.Resource{
-		{
-			Kind:   resource.FALCO_RULE,
-			Name:   "Falco profile for Nginx",
-			Vendor: "Nginx",
-			Rules: []*resource.FalcoRuleData{
-				{Raw: "nginxRule"},
+func memoryResourceRepositoryWithRules() resource.Repository {
+	return resource.NewMemoryRepository(
+		[]*resource.Resource{
+			{
+				ID:     "nginx",
+				Kind:   resource.FALCO_RULE,
+				Name:   "Falco profile for Nginx",
+				Vendor: "Nginx",
+				Rules: []*resource.FalcoRuleData{
+					{Raw: "nginxRule"},
+				},
+			},
+			{
+				ID:     "traefik",
+				Kind:   "GrafanaDashboard",
+				Name:   "Grafana Dashboard for Traefik",
+				Vendor: "Traefik",
+				Rules: []*resource.FalcoRuleData{
+					{Raw: "traefikRule"},
+				},
 			},
 		},
-		{
-			Kind:   "GrafanaDashboard",
-			Name:   "Grafana Dashboard for Traefik",
-			Vendor: "Traefik",
-			Rules: []*resource.FalcoRuleData{
-				{Raw: "traefikRule"},
-			},
-		},
-	}, nil
-}
-
-func (resources *dummyResourcesRepositoryForOneRaw) FindById(id string) (*resource.Resource, error) {
-	all, err := resources.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	idToFind := strings.ToLower(id)
-	for _, res := range all {
-		resourceName := strings.ToLower(res.Name)
-		resourceID := strings.ToLower(res.ID)
-		if resourceName == idToFind || resourceID == idToFind {
-			return res, nil
-		}
-	}
-	return nil, fmt.Errorf("not found")
+	)
 }
 
 func TestReturnsOneRawResource(t *testing.T) {
 	useCase := RetrieveOneRawResource{
-		ResourceRepository: &dummyResourcesRepositoryForOneRaw{},
-		ResourceID:         "Falco profile for Nginx",
+		ResourceRepository: memoryResourceRepositoryWithRules(),
+		ResourceID:         "nginx",
 	}
 
-	res, _ := useCase.Execute()
+	resource, _ := useCase.Execute()
 
-	assert.Equal(t, []byte("nginxRule"), res.Raw())
+	assert.Equal(t, []byte("nginxRule"), resource.Raw())
 }
 
 func TestReturnsResourceRawNotFound(t *testing.T) {
 	useCase := RetrieveOneRawResource{
-		ResourceRepository: &dummyResourcesRepositoryForOneRaw{},
+		ResourceRepository: memoryResourceRepositoryWithRules(),
 		ResourceID:         "notFound",
 	}
 

@@ -7,11 +7,14 @@ import (
 )
 
 func TestReturnsAllResources(t *testing.T) {
-	resourceRepository := resource.MemoryRepository{}
-	resourceRepository.Add(resource.Resource{Name: "Falco profile for Nginx"})
-	resourceRepository.Add(resource.Resource{Name: "Falco profile for Grafana"})
+	resourceRepository := resource.NewMemoryRepository(
+		[]*resource.Resource{
+			&resource.Resource{Name: "Falco profile for Nginx"},
+			&resource.Resource{Name: "Falco profile for Grafana"},
+		},
+	)
 
-	useCase := RetrieveAllResources{ResourceRepository: &resourceRepository}
+	useCase := RetrieveAllResources{ResourceRepository: resourceRepository}
 
 	resources, _ := useCase.Execute()
 

@@ -7,53 +7,45 @@ import (
 	"testing"
 )
 
-type dummyResourcesFromVendor_Resources struct{}
-
-func (resources *dummyResourcesFromVendor_Resources) FindAll() ([]*resource.Resource, error) {
-	return []*resource.Resource{
-		{
-			Name:   "Falco profile for Nginx",
-			Vendor: "Nginx",
+func memoryResourceRepositoryFromVendor() resource.Repository {
+	return resource.NewMemoryRepository(
+		[]*resource.Resource{
+			{
+				Name:   "Falco profile for Nginx",
+				Vendor: "Nginx",
+			},
+			{
+				Name:   "Grafana Dashboard for Traefik",
+				Vendor: "Traefik",
+			},
 		},
-		{
-			Name:   "Grafana Dashboard for Traefik",
-			Vendor: "Traefik",
-		},
-	}, nil
+	)
 }
 
-func (resources *dummyResourcesFromVendor_Resources) FindById(id string) (*resource.Resource, error) {
-	return &resource.Resource{
-		Name: "Falco profile for Nginx",
-	}, nil
-}
-
-type dummyResourcesFromVendor_Vendors struct{}
-
-func (resources *dummyResourcesFromVendor_Vendors) FindAll() ([]*vendor.Vendor, error) {
-	return []*vendor.Vendor{
-		{
-			Name: "Apache",
+func memoryVendorRepositoryFromVendor() vendor.Repository {
+	return vendor.NewMemoryRepository(
+		[]*vendor.Vendor{
+			{
+				ID:   "apache",
+				Name: "Apache",
+			},
+			{
+				ID:   "nginx",
+				Name: "Nginx",
+			},
+			{
+				ID:   "traefik",
+				Name: "Traefik",
+			},
 		},
-		{
-			Name: "Nginx",
-		},
-		{
-			Name: "Traefik",
-		},
-	}, nil
-}
-func (resources *dummyResourcesFromVendor_Vendors) FindById(id string) (*vendor.Vendor, error) {
-	return &vendor.Vendor{
-		Name: id,
-	}, nil
+	)
 }
 
 func TestReturnsAllResourcesFromVendor(t *testing.T) {
 	useCase := RetrieveAllResourcesFromVendor{
 		VendorID:           "Nginx",
-		ResourceRepository: &dummyResourcesFromVendor_Resources{},
-		VendorRepository:   &dummyResourcesFromVendor_Vendors{},
+		ResourceRepository: memoryResourceRepositoryFromVendor(),
+		VendorRepository:   memoryVendorRepositoryFromVendor(),
 	}
 
 	resources, _ := useCase.Execute()
@@ -69,8 +61,8 @@ func TestReturnsAllResourcesFromVendor(t *testing.T) {
 func TestReturnsVendorNotFoundResourcesFromVendor(t *testing.T) {
 	useCase := RetrieveAllResourcesFromVendor{
 		VendorID:           "not-found",
-		ResourceRepository: &dummyResourcesFromVendor_Resources{},
-		VendorRepository:   &dummyResourcesFromVendor_Vendors{},
+		ResourceRepository: memoryResourceRepositoryFromVendor(),
+		VendorRepository:   memoryVendorRepositoryFromVendor(),
 	}
 
 	_, err := useCase.Execute()
@@ -81,8 +73,8 @@ func TestReturnsVendorNotFoundResourcesFromVendor(t *testing.T) {
 func TestReturnsResourcesNotFoundResourcesFromVendor(t *testing.T) {
 	useCase := RetrieveAllResourcesFromVendor{
 		VendorID:           "apache",
-		ResourceRepository: &dummyResourcesFromVendor_Resources{},
-		VendorRepository:   &dummyResourcesFromVendor_Vendors{},
+		ResourceRepository: memoryResourceRepositoryFromVendor(),
+		VendorRepository:   memoryVendorRepositoryFromVendor(),
 	}
 
 	_, err := useCase.Execute()

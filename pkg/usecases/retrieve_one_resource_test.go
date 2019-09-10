@@ -1,49 +1,33 @@
 package usecases
 
 import (
-	"fmt"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
-type dummyResourcesRepositoryForOne struct{}
-
-func (resources *dummyResourcesRepositoryForOne) FindAll() ([]*resource.Resource, error) {
-	return []*resource.Resource{
-		{
-			Kind:   resource.FALCO_RULE,
-			Name:   "Falco profile for Nginx",
-			Vendor: "Nginx",
-			ID:     "nginx",
+func memoryResourceRepository() resource.Repository {
+	return resource.NewMemoryRepository(
+		[]*resource.Resource{
+			&resource.Resource{
+				Kind:   resource.FALCO_RULE,
+				Name:   "Falco profile for Nginx",
+				Vendor: "Nginx",
+				ID:     "nginx",
+			},
+			&resource.Resource{
+				Kind:   resource.FALCO_RULE,
+				Name:   "Falco profile for Traefik",
+				Vendor: "Traefik",
+				ID:     "traefik",
+			},
 		},
-		{
-			Kind:   "GrafanaDashboard",
-			Name:   "Grafana Dashboard for Traefik",
-			Vendor: "Traefik",
-			ID:     "traefik",
-		},
-	}, nil
-}
-
-func (resources *dummyResourcesRepositoryForOne) FindById(id string) (*resource.Resource, error) {
-	all, err := resources.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	idToFind := strings.ToLower(id)
-	for _, res := range all {
-		if res.ID == idToFind {
-			return res, nil
-		}
-	}
-	return nil, fmt.Errorf("not found")
+	)
 }
 
 func TestReturnsOneResource(t *testing.T) {
 	useCase := RetrieveOneResource{
-		ResourceRepository: &dummyResourcesRepositoryForOne{},
+		ResourceRepository: memoryResourceRepository(),
 		ResourceID:         "nginx",
 	}
 
@@ -59,7 +43,7 @@ func TestReturnsOneResource(t *testing.T) {
 
 func TestReturnsResourceNotFound(t *testing.T) {
 	useCase := RetrieveOneResource{
-		ResourceRepository: &dummyResourcesRepositoryForOne{},
+		ResourceRepository: memoryResourceRepository(),
 		ResourceID:         "notFound",
 	}
 

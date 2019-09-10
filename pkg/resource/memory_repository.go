@@ -9,6 +9,12 @@ type MemoryRepository struct {
 	resources []*Resource
 }
 
+func NewMemoryRepository(resources []*Resource) Repository {
+	return &MemoryRepository{
+		resources: resources,
+	}
+}
+
 func (r *MemoryRepository) FindAll() ([]*Resource, error) {
 	return r.resources, nil
 }
