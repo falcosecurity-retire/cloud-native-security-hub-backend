@@ -1,10 +1,13 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -115,4 +118,18 @@ func TestRetrieveOneRawHandlerReturnsAYAMLResponse(t *testing.T) {
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 	assert.Equal(t, "application/x-yaml", recorder.HeaderMap["Content-Type"][0])
+}
+
+func TestLoggerIsLogging(t *testing.T) {
+	apacheID := "apache"
+	url := "/resources/" + apacheID + "/raw.yaml"
+	request, _ := http.NewRequest("GET", url, nil)
+	recorder := httptest.NewRecorder()
+
+	buff := &bytes.Buffer{}
+	router := NewRouterWithLogger(log.New(buff, "", 0))
+	router.ServeHTTP(recorder, request)
+
+	expectedLog := fmt.Sprintf("200 [] GET %s\n", url)
+	assert.Equal(t, expectedLog, buff.String())
 }
