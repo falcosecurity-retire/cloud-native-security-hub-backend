@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -28,11 +27,15 @@ type Resource struct {
 }
 
 func (r *Resource) Raw() []byte {
-	buffer := bytes.Buffer{}
+	raw := make(map[string]map[string]string)
+	raw["customRules"] = map[string]string{}
+
 	for _, rule := range r.Rules {
-		buffer.Write([]byte(rule.Raw))
+		raw["customRules"]["rules-"+r.ID+".yaml"] += rule.Raw
 	}
-	return buffer.Bytes()
+
+	result, _ := yaml.Marshal(raw)
+	return result
 }
 
 type resourceAlias Resource // Avoid stack overflow while marshalling / unmarshalling
