@@ -26,7 +26,7 @@ type Resource struct {
 	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
 }
 
-func (r *Resource) Raw() []byte {
+func (r *Resource) GenerateRulesForHelmChart() []byte {
 	raw := make(map[string]map[string]string)
 	raw["customRules"] = map[string]string{}
 

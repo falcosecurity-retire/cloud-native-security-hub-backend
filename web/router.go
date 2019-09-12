@@ -17,7 +17,7 @@ func registerOn(router *httprouter.Router) {
 	h := NewHandlerRepository()
 	router.GET("/resources", h.retrieveAllResourcesHandler)
 	router.GET("/resources/:resource", h.retrieveOneResourcesHandler)
-	router.GET("/resources/:resource/raw.yaml", h.retrieveOneResourcesRawHandler)
+	router.GET("/resources/:resource/custom-rules.yaml", h.retrieveFalcoRulesForHelmChartHandler)
 	router.GET("/vendors", h.retrieveAllVendorsHandler)
 	router.GET("/vendors/:vendor", h.retrieveOneVendorsHandler)
 	router.GET("/vendors/:vendor/resources", h.retrieveAllResourcesFromVendorHandler)

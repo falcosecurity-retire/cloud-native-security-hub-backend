@@ -31,22 +31,22 @@ func memoryResourceRepositoryWithRules() resource.Repository {
 	)
 }
 
-func TestReturnsOneRawResource(t *testing.T) {
-	useCase := RetrieveOneRawResource{
+func TestReturnsFalcoRulesForHelmChart(t *testing.T) {
+	useCase := RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: memoryResourceRepositoryWithRules(),
 		ResourceID:         "nginx",
 	}
 
-	resource, _ := useCase.Execute()
+	result, _ := useCase.Execute()
 	expected := `customRules:
   rules-nginx.yaml: nginxRule
 `
 
-	assert.Equal(t, expected, string(resource.Raw()))
+	assert.Equal(t, expected, string(result))
 }
 
-func TestReturnsResourceRawNotFound(t *testing.T) {
-	useCase := RetrieveOneRawResource{
+func TestFalcoRulesForHelmChartReturnsNotFound(t *testing.T) {
+	useCase := RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: memoryResourceRepositoryWithRules(),
 		ResourceID:         "notFound",
 	}
