@@ -38,8 +38,11 @@ func TestReturnsOneRawResource(t *testing.T) {
 	}
 
 	resource, _ := useCase.Execute()
+	expected := `customRules:
+  rules-nginx.yaml: nginxRule
+`
 
-	assert.Equal(t, []byte("nginxRule"), resource.Raw())
+	assert.Equal(t, expected, string(resource.Raw()))
 }
 
 func TestReturnsResourceRawNotFound(t *testing.T) {

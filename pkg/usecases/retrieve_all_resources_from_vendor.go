@@ -3,9 +3,9 @@ package usecases
 import (
 	"fmt"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 	"strings"
 )
-import "github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 
 type RetrieveAllResourcesFromVendor struct {
 	VendorID           string

@@ -103,8 +103,12 @@ func TestRetrieveOneRawReturnsTheContent(t *testing.T) {
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 
-	expectedResult := []byte("- macro: apache_consider_syscalls\n  condition: (evt.num < 0)")
-	assert.Equal(t, expectedResult, recorder.Body.Bytes())
+	expectedResult := `customRules:
+  rules-apache.yaml: |-
+    - macro: apache_consider_syscalls
+      condition: (evt.num < 0)
+`
+	assert.Equal(t, expectedResult, string(recorder.Body.Bytes()))
 }
 
 func TestRetrieveOneRawHandlerReturnsAYAMLResponse(t *testing.T) {
