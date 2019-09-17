@@ -30,9 +30,9 @@ func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID)
 }
 
-func TestRetrieveOneRawResourceHandlerReturnsHTTPOk(t *testing.T) {
-	apacheHash := "apache"
-	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheHash+"/raw.yaml")
+func TestRetrieveFalcoRulesForHelmChartHandlerReturnsHTTPOk(t *testing.T) {
+	apacheID := "apache"
+	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID+"/custom-rules.yaml")
 }
 
 func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {
@@ -96,9 +96,9 @@ func testRetrieveAllHandlerReturnsAJSONResponse(t *testing.T, urlPath string) {
 	assert.Equal(t, "application/json", recorder.HeaderMap["Content-Type"][0])
 }
 
-func TestRetrieveOneRawReturnsTheContent(t *testing.T) {
+func TestRetrieveFalcoRulesForHelmChartReturnsContent(t *testing.T) {
 	apacheID := "apache"
-	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/raw.yaml", nil)
+	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/custom-rules.yaml", nil)
 
 	recorder := httptest.NewRecorder()
 	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
@@ -106,13 +106,17 @@ func TestRetrieveOneRawReturnsTheContent(t *testing.T) {
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 
-	expectedResult := []byte("- macro: apache_consider_syscalls\n  condition: (evt.num < 0)")
-	assert.Equal(t, expectedResult, recorder.Body.Bytes())
+	expectedResult := `customRules:
+  rules-apache.yaml: |-
+    - macro: apache_consider_syscalls
+      condition: (evt.num < 0)
+`
+	assert.Equal(t, expectedResult, string(recorder.Body.Bytes()))
 }
 
-func TestRetrieveOneRawHandlerReturnsAYAMLResponse(t *testing.T) {
+func TestRetrieveFalcoRulesForHelmChartReturnsAYAMLResponse(t *testing.T) {
 	apacheID := "apache"
-	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/raw.yaml", nil)
+	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/custom-rules.yaml", nil)
 	recorder := httptest.NewRecorder()
 
 	router := NewRouter()
@@ -122,7 +126,7 @@ func TestRetrieveOneRawHandlerReturnsAYAMLResponse(t *testing.T) {
 
 func TestLoggerIsLogging(t *testing.T) {
 	apacheID := "apache"
-	url := "/resources/" + apacheID + "/raw.yaml"
+	url := "/resources/" + apacheID + "/custom-rules.yaml"
 	request, _ := http.NewRequest("GET", url, nil)
 	recorder := httptest.NewRecorder()
 

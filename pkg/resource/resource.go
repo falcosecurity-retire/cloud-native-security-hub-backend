@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
@@ -15,24 +14,29 @@ const (
 )
 
 type Resource struct {
-	ID          string           `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind        Kind             `json:"kind" yaml:"kind"`
-	Vendor      string           `json:"vendor" yaml:"vendor"`
-	Name        string           `json:"name" yaml:"name"`
-	Description string           `json:"description" yaml:"description"`
-	Keywords    []string         `json:"keywords" yaml:"keywords"`
-	Icon        string           `json:"icon" yaml:"icon"`
-	Website     string           `json:"website" yaml:"website"`
-	Maintainers []*Maintainer    `json:"maintainers" yaml:"maintainers"`
-	Rules       []*FalcoRuleData `json:"rules" yaml:"rules"`
+	ID               string           `json:"id,omitempty" yaml:"id,omitempty"`
+	Kind             Kind             `json:"kind" yaml:"kind"`
+	Vendor           string           `json:"vendor" yaml:"vendor"`
+	Name             string           `json:"name" yaml:"name"`
+	ShortDescription string           `json:"shortDescription" yaml:"shortDescription"`
+	Description      string           `json:"description" yaml:"description"`
+	Keywords         []string         `json:"keywords" yaml:"keywords"`
+	Icon             string           `json:"icon" yaml:"icon"`
+	Website          string           `json:"website" yaml:"website"`
+	Maintainers      []*Maintainer    `json:"maintainers" yaml:"maintainers"`
+	Rules            []*FalcoRuleData `json:"rules" yaml:"rules"`
 }
 
-func (r *Resource) Raw() []byte {
-	buffer := bytes.Buffer{}
+func (r *Resource) GenerateRulesForHelmChart() []byte {
+	raw := make(map[string]map[string]string)
+	raw["customRules"] = map[string]string{}
+
 	for _, rule := range r.Rules {
-		buffer.Write([]byte(rule.Raw))
+		raw["customRules"]["rules-"+r.ID+".yaml"] += rule.Raw
 	}
-	return buffer.Bytes()
+
+	result, _ := yaml.Marshal(raw)
+	return result
 }
 
 type resourceAlias Resource // Avoid stack overflow while marshalling / unmarshalling

@@ -6,32 +6,18 @@ import (
 	"testing"
 )
 
-type dummyVendorsRepository struct{}
-
-func (resources *dummyVendorsRepository) FindAll() ([]*vendor.Resource, error) {
-	return []*vendor.Resource{
-		{
-			Name: "Apache",
-		},
-		{
-			Name: "Nginx",
-		},
-	}, nil
-}
-func (resources *dummyVendorsRepository) FindById(id string) (*vendor.Resource, error) {
-	return &vendor.Resource{
-		Name: "Apache",
-	}, nil
-}
-
 func TestReturnsAllVendors(t *testing.T) {
-	useCase := RetrieveAllVendors{
-		VendorRepository: &dummyVendorsRepository{},
-	}
+	vendorRepository := vendor.NewMemoryRepository(
+		[]*vendor.Vendor{
+			&vendor.Vendor{Name: "Apache"},
+			&vendor.Vendor{Name: "Nginx"},
+		},
+	)
+	useCase := RetrieveAllVendors{VendorRepository: vendorRepository}
 
 	resources, _ := useCase.Execute()
 
-	assert.Equal(t, resources, []*vendor.Resource{
+	assert.Equal(t, resources, []*vendor.Vendor{
 		{
 			Name: "Apache",
 		},

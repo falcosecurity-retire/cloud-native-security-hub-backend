@@ -9,27 +9,27 @@ import (
 	"sync"
 )
 
-type file struct {
+type fileRepository struct {
 	path                     string
 	resourcesCache           []*Resource
 	resourcesCacheFilledOnce sync.Once
 	resourcesCacheError      error
 }
 
-func FromPath(path string) (*file, error) {
+func FromPath(path string) (*fileRepository, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil, err
 	}
 
-	return &file{path: path}, nil
+	return &fileRepository{path: path}, nil
 }
 
-func (f *file) FindAll() (resources []*Resource, err error) {
+func (f *fileRepository) FindAll() (resources []*Resource, err error) {
 	f.resourcesCacheFilledOnce.Do(f.fillResourcesCache)
 	return f.resourcesCache, f.resourcesCacheError
 }
 
-func (f *file) FindById(id string) (res *Resource, err error) {
+func (f *fileRepository) FindById(id string) (res *Resource, err error) {
 	f.resourcesCacheFilledOnce.Do(f.fillResourcesCache)
 	idToFind := strings.ToLower(id)
 
@@ -67,7 +67,7 @@ func resourceFromFile(path string) (resource Resource, err error) {
 	return
 }
 
-func (f *file) fillResourcesCache() {
+func (f *fileRepository) fillResourcesCache() {
 	var resources []*Resource
 	f.resourcesCacheError = filepath.Walk(f.path, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == ".yaml" {

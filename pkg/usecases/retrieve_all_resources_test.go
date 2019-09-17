@@ -6,39 +6,20 @@ import (
 	"testing"
 )
 
-type dummyResourcesRepository struct{}
-
-func (resources *dummyResourcesRepository) FindAll() ([]*resource.Resource, error) {
-	return []*resource.Resource{
-		{
-			Name: "Falco profile for Nginx",
-		},
-		{
-			Name: "Grafana Dashboard for Traefik",
-		},
-	}, nil
-}
-
-func (resources *dummyResourcesRepository) FindById(id string) (*resource.Resource, error) {
-	return &resource.Resource{
-
-		Name: "Falco profile for Nginx",
-	}, nil
-}
-
 func TestReturnsAllResources(t *testing.T) {
-	useCase := RetrieveAllResources{
-		ResourceRepository: &dummyResourcesRepository{},
-	}
+	resourceRepository := resource.NewMemoryRepository(
+		[]*resource.Resource{
+			&resource.Resource{Name: "Falco profile for Nginx"},
+			&resource.Resource{Name: "Falco profile for Grafana"},
+		},
+	)
+
+	useCase := RetrieveAllResources{ResourceRepository: resourceRepository}
 
 	resources, _ := useCase.Execute()
 
 	assert.Equal(t, []*resource.Resource{
-		{
-			Name: "Falco profile for Nginx",
-		},
-		{
-			Name: "Grafana Dashboard for Traefik",
-		},
+		{Name: "Falco profile for Nginx"},
+		{Name: "Falco profile for Grafana"},
 	}, resources)
 }

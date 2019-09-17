@@ -5,15 +5,21 @@ import (
 	"strings"
 )
 
-type Memory struct {
+type MemoryRepository struct {
 	resources []*Resource
 }
 
-func (r *Memory) FindAll() ([]*Resource, error) {
+func NewMemoryRepository(resources []*Resource) Repository {
+	return &MemoryRepository{
+		resources: resources,
+	}
+}
+
+func (r *MemoryRepository) FindAll() ([]*Resource, error) {
 	return r.resources, nil
 }
 
-func (r *Memory) FindById(id string) (*Resource, error) {
+func (r *MemoryRepository) FindById(id string) (*Resource, error) {
 	idToFind := strings.ToLower(id)
 	for _, res := range r.resources {
 		if res.ID == idToFind {
@@ -23,6 +29,6 @@ func (r *Memory) FindById(id string) (*Resource, error) {
 	return nil, fmt.Errorf("not found")
 }
 
-func (r *Memory) Add(resource Resource) {
+func (r *MemoryRepository) Add(resource Resource) {
 	r.resources = append(r.resources, &resource)
 }

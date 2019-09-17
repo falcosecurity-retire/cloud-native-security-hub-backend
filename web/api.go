@@ -13,7 +13,7 @@ type HandlerRepository interface {
 	notFound() http.HandlerFunc
 	retrieveAllResourcesHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
-	retrieveOneResourcesRawHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveAllResourcesFromVendorHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
@@ -63,7 +63,7 @@ func (h *handlerRepository) retrieveAllResourcesHandler(writer http.ResponseWrit
 }
 
 func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	useCase := h.factory.NewRetrieveOneResourceUseCase(params.ByName("hash"))
+	useCase := h.factory.NewRetrieveOneResourceUseCase(params.ByName("resource"))
 	resources, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
@@ -76,8 +76,8 @@ func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWrit
 	json.NewEncoder(writer).Encode(resources)
 }
 
-func (h *handlerRepository) retrieveOneResourcesRawHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	useCase := h.factory.NewRetrieveOneRawResourceUseCase(params.ByName("hash"))
+func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartUseCase(params.ByName("resource"))
 	content, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
@@ -87,7 +87,7 @@ func (h *handlerRepository) retrieveOneResourcesRawHandler(writer http.ResponseW
 	}
 	writer.Header().Set("Content-Type", "application/x-yaml")
 	h.logRequest(request, 200)
-	writer.Write(content.Raw())
+	writer.Write(content)
 }
 
 func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {

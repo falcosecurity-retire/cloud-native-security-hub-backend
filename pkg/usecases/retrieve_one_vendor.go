@@ -9,6 +9,6 @@ type RetrieveOneVendor struct {
 	VendorRepository vendor.Repository
 }
 
-func (useCase *RetrieveOneVendor) Execute() (res *vendor.Resource, err error) {
+func (useCase *RetrieveOneVendor) Execute() (res *vendor.Vendor, err error) {
 	return useCase.VendorRepository.FindById(useCase.VendorID)
 }

@@ -1,74 +1,57 @@
 package usecases
 
 import (
-	"fmt"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
-type dummyVendorRepository struct{}
-
-func (resources *dummyVendorRepository) FindAll() ([]*vendor.Resource, error) {
-	return []*vendor.Resource{
-		{
-			ID:   "apache",
-			Name: "Apache",
+func memoryVendorRepository() vendor.Repository {
+	return vendor.NewMemoryRepository(
+		[]*vendor.Vendor{
+			{
+				ID:   "apache",
+				Name: "Apache",
+			},
+			{
+				ID:   "nginx",
+				Name: "Nginx",
+			},
 		},
-		{
-			ID:   "nginx",
-			Name: "Nginx",
-		},
-	}, nil
-}
-
-func (resources *dummyVendorRepository) FindById(id string) (*vendor.Resource, error) {
-	all, err := resources.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	idToFind := strings.ToLower(id)
-	for _, res := range all {
-		if res.ID == idToFind {
-			return res, nil
-		}
-	}
-	return nil, fmt.Errorf("not found")
+	)
 }
 
 func TestReturnsOneVendorByName(t *testing.T) {
 	useCase := RetrieveOneVendor{
-		VendorRepository: &dummyVendorRepository{},
+		VendorRepository: memoryVendorRepository(),
 		VendorID:         "apache",
 	}
 
 	res, _ := useCase.Execute()
 
-	assert.Equal(t, &vendor.Resource{
+	assert.Equal(t, &vendor.Vendor{
 		ID:   "apache",
 		Name: "Apache",
 	}, res)
 }
 
-func TestReturnsOneVendorByHash(t *testing.T) {
-	repository := &dummyVendorRepository{}
-	all, _ := repository.FindAll()
-	expected := all[0]
-
+func TestReturnsOneVendorByID(t *testing.T) {
 	useCase := RetrieveOneVendor{
-		VendorRepository: repository,
-		VendorID:         expected.ID,
+		VendorRepository: memoryVendorRepository(),
+		VendorID:         "apache",
 	}
 
 	res, _ := useCase.Execute()
 
-	assert.Equal(t, expected, res)
+	assert.Equal(t, &vendor.Vendor{
+		ID:   "apache",
+		Name: "Apache",
+	}, res)
 }
 
 func TestReturnsOneVendorNotFound(t *testing.T) {
 	useCase := RetrieveOneVendor{
-		VendorRepository: &dummyVendorRepository{},
+		VendorRepository: memoryVendorRepository(),
 		VendorID:         "non-existent",
 	}
 
