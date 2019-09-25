@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cnvh-frontend-deployment
-  namespace: cnvh
+  name: frontend
+  namespace: securityhub
   labels:
-    app: cnvh-frontend
+    app: frontend
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cnvh-frontend
+      app: frontend
   template:
     metadata:
       labels:
-        app: cnvh-frontend
+        app: frontend
     spec:
       containers:
-      - name: cnvh-frontend
-        image: gcr.io/mateo-burillo-ns/cnvh-frontend:latest
+      - name: frontend
+        image: gcr.io/mateo-burillo-ns/securityhub-frontend:latest
         ports:
         - containerPort: 3000
         env:
           - name: BASE_URL
-            value: http://35.225.102.147
+            value: https://securityhub.dev

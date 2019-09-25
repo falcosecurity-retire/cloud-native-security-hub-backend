@@ -1,27 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cnvh-backend-service
-  namespace: cnvh
+  name: backend
+  namespace: securityhub
 spec:
   selector:
-    app: cnvh-backend
+    app: backend
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
-  type: LoadBalancer
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cnvh-frontend-service
-  namespace: cnvh
+  name: frontend
+  namespace: securityhub
 spec:
   selector:
-    app: cnvh-frontend
+    app: frontend
   ports:
     - protocol: TCP
       port: 80
       targetPort: 3000
-  type: LoadBalancer
