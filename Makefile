@@ -18,7 +18,7 @@ push: build
 deploy: deploy-backend deploy-frontend
 
 deploy-backend:
-	kubectl -n securityhub patch deployment securityhub-backend -p "{\"spec\": {\"template\": {\"metadata\": { \"labels\": {  \"redeploy\": \"$(shell date +%s)\"}}}}}"
+	kubectl -n securityhub patch deployment backend -p "{\"spec\": {\"template\": {\"metadata\": { \"labels\": {  \"redeploy\": \"$(shell date +%s)\"}}}}}"
 
 deploy-frontend:
-	kubectl -n securityhub patch deployment securityhub-frontend -p "{\"spec\": {\"template\": {\"metadata\": { \"labels\": {  \"redeploy\": \"$(shell date +%s)\"}}}}}"
+	kubectl -n securityhub patch deployment frontend -p "{\"spec\": {\"template\": {\"metadata\": { \"labels\": {  \"redeploy\": \"$(shell date +%s)\"}}}}}"
