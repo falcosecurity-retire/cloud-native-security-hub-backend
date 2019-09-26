@@ -23,3 +23,5 @@ spec:
         env:
           - name: BASE_URL
             value: https://securityhub.dev
+          - name: API_URL
+            value: https://api.securityhub.dev

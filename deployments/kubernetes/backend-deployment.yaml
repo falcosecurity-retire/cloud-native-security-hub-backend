@@ -28,6 +28,10 @@ spec:
             value: /resources/vendors
         ports:
         - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /resources
+            port: 8080
         volumeMounts:
           - name: resources
             mountPath: /resources
@@ -39,3 +43,8 @@ spec:
         volumeMounts:
           - name: resources
             mountPath: /shared-resources
+        readinessProbe:
+          exec:
+            command:
+              - touch
+              - /health

@@ -1,0 +1,47 @@
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: backend
+  namespace: securityhub
+spec:
+  domains:
+    - api.securityhub.dev
+---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: frontend
+  namespace: securityhub
+spec:
+  domains:
+    - securityhub.dev
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: backend
+  namespace: securityhub
+  annotations:
+    networking.gke.io/managed-certificates: backend
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: backend
+          servicePort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: securityhub
+  annotations:
+    networking.gke.io/managed-certificates: frontend
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: frontend
+          servicePort: 3000
