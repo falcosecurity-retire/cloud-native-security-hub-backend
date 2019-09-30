@@ -30,7 +30,7 @@ spec:
         - containerPort: 8080
         readinessProbe:
           httpGet:
-            path: /resources
+            path: /health
             port: 8080
         volumeMounts:
           - name: resources
