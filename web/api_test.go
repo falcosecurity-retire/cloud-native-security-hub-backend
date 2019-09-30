@@ -137,3 +137,13 @@ func TestLoggerIsLogging(t *testing.T) {
 	expectedLog := fmt.Sprintf("200 [] GET %s\n", url)
 	assert.Equal(t, expectedLog, buff.String())
 }
+
+func TestHealthCheckEndpoint(t *testing.T) {
+	request, _ := http.NewRequest("GET", "/health", nil)
+	recorder := httptest.NewRecorder()
+
+	router := NewRouter()
+	router.ServeHTTP(recorder, request)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+}

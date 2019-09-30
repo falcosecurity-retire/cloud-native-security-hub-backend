@@ -29,5 +29,6 @@ func registerOn(router *httprouter.Router, logger *log.Logger) {
 	router.GET("/vendors", h.retrieveAllVendorsHandler)
 	router.GET("/vendors/:vendor", h.retrieveOneVendorsHandler)
 	router.GET("/vendors/:vendor/resources", h.retrieveAllResourcesFromVendorHandler)
+	router.GET("/health", h.healthCheckHandler)
 	router.NotFound = h.notFound()
 }

@@ -17,6 +17,7 @@ type HandlerRepository interface {
 	retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveAllResourcesFromVendorHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	healthCheckHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }
 
 type handlerRepository struct {
@@ -130,4 +131,10 @@ func (h *handlerRepository) retrieveAllResourcesFromVendorHandler(writer http.Re
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
 	json.NewEncoder(writer).Encode(resources)
+}
+
+func (h *handlerRepository) healthCheckHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	h.logRequest(request, 200)
+	writer.Header().Set("Content-Type", "text/plain")
+	writer.Write([]byte("OK"))
 }
