@@ -76,8 +76,8 @@ func (r *Resource) MarshalJSON() ([]byte, error) {
 }
 
 type Maintainer struct {
-	Name  string `json:"name" yaml:"name"`
-	Email string `json:"email" yaml:"email"`
+	Name string `json:"name" yaml:"name"`
+	Link string `json:"link" yaml:"link"`
 }
 
 type FalcoRuleData struct {
