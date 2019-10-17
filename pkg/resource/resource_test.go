@@ -54,8 +54,8 @@ func newResource() Resource {
 		Icon:        "https://sysdig.com/icon.png",
 		Maintainers: []*Maintainer{
 			{
-				Name:  "bencer",
-				Email: "bencer@sysdig.com",
+				Name: "bencer",
+				Link: "github.com/bencer",
 			},
 		},
 	}

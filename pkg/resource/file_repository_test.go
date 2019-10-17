@@ -26,12 +26,12 @@ func buildResourcesFromFixtures() []*Resource {
 			Icon:        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Apache_HTTP_server_logo_%282016%29.svg/300px-Apache_HTTP_server_logo_%282016%29.svg.png",
 			Maintainers: []*Maintainer{
 				{
-					Name:  "nestorsalceda",
-					Email: "nestor.salceda@sysdig.com",
+					Name: "nestorsalceda",
+					Link: "github.com/nestorsalceda",
 				},
 				{
-					Name:  "fedebarcelona",
-					Email: "fede.barcelona@sysdig.com",
+					Name: "fedebarcelona",
+					Link: "github.com/tembleking",
 				},
 			},
 			Rules: []*FalcoRuleData{
@@ -51,12 +51,12 @@ func buildResourcesFromFixtures() []*Resource {
 			Icon:        "https://upload.wikimedia.org/wikipedia/en/thumb/4/45/MongoDB-Logo.svg/2560px-MongoDB-Logo.svg.png",
 			Maintainers: []*Maintainer{
 				{
-					Name:  "nestorsalceda",
-					Email: "nestor.salceda@sysdig.com",
+					Name: "nestorsalceda",
+					Link: "github.com/nestorsalceda",
 				},
 				{
-					Name:  "fedebarcelona",
-					Email: "fede.barcelona@sysdig.com",
+					Name: "fedebarcelona",
+					Link: "github.com/tembleking",
 				},
 			},
 			Rules: []*FalcoRuleData{
