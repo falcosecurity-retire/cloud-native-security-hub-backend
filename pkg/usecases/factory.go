@@ -1,10 +1,12 @@
 package usecases
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
+	"database/sql"
 	"log"
 	"os"
+
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 )
 
 type Factory interface {
@@ -21,12 +23,14 @@ type Factory interface {
 
 func NewFactory() Factory {
 	factory := &factory{}
+	factory.db = factory.newDB()
 	factory.resourceRepository = factory.NewResourcesRepository()
 	factory.vendorRepository = factory.NewVendorRepository()
 	return factory
 }
 
 type factory struct {
+	db                 *sql.DB
 	vendorRepository   vendor.Repository
 	resourceRepository resource.Repository
 }
@@ -73,17 +77,7 @@ func (f *factory) NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *Ret
 }
 
 func (f *factory) NewResourcesRepository() resource.Repository {
-	resourcesPath, ok := os.LookupEnv("RESOURCES_PATH")
-	if !ok {
-		log.Println("The RESOURCES_PATH env var is not set")
-		os.Exit(1)
-	}
-	repo, err := resource.FromPath(resourcesPath)
-	if err != nil {
-		log.Println("the resource repository of type file does not exist")
-		os.Exit(1)
-	}
-	return repo
+	return resource.NewPostgresRepository(f.db)
 }
 
 func (f *factory) NewVendorRepository() vendor.Repository {
@@ -98,4 +92,14 @@ func (f *factory) NewVendorRepository() vendor.Repository {
 		os.Exit(1)
 	}
 	return repo
+}
+
+func (f *factory) newDB() *sql.DB {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	return db
 }

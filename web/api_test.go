@@ -2,11 +2,8 @@ package web
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -57,29 +54,6 @@ func testRetrieveAllReturnsHTTPOk(t *testing.T, path string) {
 	assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
-func TestRetrieveAllResourcesHandlerReturnsResourcesSerializedAsJSON(t *testing.T) {
-	testRetrieveallSerializedAsJSON(t, "/resources", "../test/fixtures/resources")
-}
-
-func TestRetrieveAllVendorsHandlerReturnsResourcesSerializedAsJSON(t *testing.T) {
-	testRetrieveallSerializedAsJSON(t, "/vendors", "../test/fixtures/vendors")
-}
-
-func testRetrieveallSerializedAsJSON(t *testing.T, urlPath, fixturesPath string) {
-	repo, _ := resource.FromPath(fixturesPath)
-	resources, _ := repo.FindAll()
-
-	request, _ := http.NewRequest("GET", urlPath, nil)
-	recorder := httptest.NewRecorder()
-	router := NewRouter()
-	router.ServeHTTP(recorder, request)
-
-	var result []*resource.Resource
-	body, _ := ioutil.ReadAll(recorder.Body)
-	json.Unmarshal([]byte(body), &result)
-	assert.Equal(t, resources, result)
-}
-
 func TestRetrieveAllResourcesHandlerReturnsAJSONResponse(t *testing.T) {
 	testRetrieveAllHandlerReturnsAJSONResponse(t, "/resources")
 }
@@ -94,24 +68,6 @@ func testRetrieveAllHandlerReturnsAJSONResponse(t *testing.T, urlPath string) {
 	router := NewRouter()
 	router.ServeHTTP(recorder, request)
 	assert.Equal(t, "application/json", recorder.HeaderMap["Content-Type"][0])
-}
-
-func TestRetrieveFalcoRulesForHelmChartReturnsContent(t *testing.T) {
-	apacheID := "apache"
-	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/custom-rules.yaml", nil)
-
-	recorder := httptest.NewRecorder()
-	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
-	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
-	router := NewRouter()
-	router.ServeHTTP(recorder, request)
-
-	expectedResult := `customRules:
-  rules-apache.yaml: |-
-    - macro: apache_consider_syscalls
-      condition: (evt.num < 0)
-`
-	assert.Equal(t, expectedResult, string(recorder.Body.Bytes()))
 }
 
 func TestRetrieveFalcoRulesForHelmChartReturnsAYAMLResponse(t *testing.T) {
