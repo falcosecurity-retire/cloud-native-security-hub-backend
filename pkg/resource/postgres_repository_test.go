@@ -9,7 +9,20 @@ import (
 )
 
 func TestAddAResource(t *testing.T) {
-	resource := &Resource{
+	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	repository := PostgresRepository{db: db}
+
+	resource := apacheResource()
+	repository.Save(resource)
+
+	retrieved, _ := repository.FindById("apache")
+	assert.Equal(t, resource, retrieved)
+
+	db.Exec("TRUNCATE TABLE security_resources")
+}
+
+func apacheResource() *Resource {
+	return &Resource{
 		ID:          "apache",
 		Kind:        "FalcoRules",
 		Version:     "1.0.0",
@@ -34,14 +47,44 @@ func TestAddAResource(t *testing.T) {
 			},
 		},
 	}
+}
 
+func mongodbResource() *Resource {
+	return &Resource{
+		Kind:        "FalcoRules",
+		Vendor:      "Mongo",
+		ID:          "mongodb",
+		Name:        "MongoDB",
+		Description: "# MongoDB Falco Rules\n",
+		Keywords:    []string{"database"},
+		Icon:        "https://upload.wikimedia.org/wikipedia/en/thumb/4/45/MongoDB-Logo.svg/2560px-MongoDB-Logo.svg.png",
+		Maintainers: []*Maintainer{
+			{
+				Name: "nestorsalceda",
+				Link: "github.com/nestorsalceda",
+			},
+			{
+				Name: "fedebarcelona",
+				Link: "github.com/tembleking",
+			},
+		},
+		Rules: []*FalcoRuleData{
+			{
+				Raw: "- macro: mongo_consider_syscalls\n  condition: (evt.num < 0)",
+			},
+		},
+	}
+}
+
+func TestFindAllResources(t *testing.T) {
 	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	repository := PostgresRepository{db: db}
 
-	repository.Save(resource)
+	repository.Save(apacheResource())
+	repository.Save(mongodbResource())
 
-	retrieved, _ := repository.FindById("apache")
-	assert.Equal(t, resource, retrieved)
+	retrieved, _ := repository.FindAll()
+	assert.Equal(t, []*Resource{apacheResource(), mongodbResource()}, retrieved)
 
 	db.Exec("TRUNCATE TABLE security_resources")
 }

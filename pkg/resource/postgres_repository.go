@@ -42,3 +42,19 @@ func (r *PostgresRepository) FindById(id string) (*Resource, error) {
 
 	return (*Resource)(result), err
 }
+
+func (r *PostgresRepository) FindAll() ([]*Resource, error) {
+	rows, err := r.db.Query(`SELECT raw FROM security_resources`)
+	defer rows.Close()
+
+	var result []*Resource
+	for rows.Next() {
+		current := new(resourceForPostgres)
+		if err = rows.Scan(&current); err != nil {
+			return nil, err
+		}
+		result = append(result, (*Resource)(current))
+	}
+
+	return result, err
+}
