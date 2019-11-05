@@ -9,8 +9,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type PostgresRepository struct {
+type postgresRepository struct {
 	db *sql.DB
+}
+
+func NewPostgresRepository(db *sql.DB) Repository {
+	return &postgresRepository{db: db}
 }
 
 type resourceForPostgres Resource
@@ -28,7 +32,7 @@ func (r *resourceForPostgres) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, &r)
 }
 
-func (r *PostgresRepository) Save(resource *Resource) error {
+func (r *postgresRepository) Save(resource *Resource) error {
 	_, err := r.db.Exec(
 		"INSERT INTO security_resources(raw) VALUES($1)",
 		resourceForPostgres(*resource))
@@ -36,14 +40,14 @@ func (r *PostgresRepository) Save(resource *Resource) error {
 	return err
 }
 
-func (r *PostgresRepository) FindById(id string) (*Resource, error) {
+func (r *postgresRepository) FindById(id string) (*Resource, error) {
 	result := new(resourceForPostgres)
 	err := r.db.QueryRow(`SELECT raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(&result)
 
 	return (*Resource)(result), err
 }
 
-func (r *PostgresRepository) FindAll() ([]*Resource, error) {
+func (r *postgresRepository) FindAll() ([]*Resource, error) {
 	rows, err := r.db.Query(`SELECT raw FROM security_resources`)
 	defer rows.Close()
 

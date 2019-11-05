@@ -10,7 +10,7 @@ import (
 
 func TestAddAResource(t *testing.T) {
 	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := PostgresRepository{db: db}
+	repository := NewPostgresRepository(db)
 
 	resource := apacheResource()
 	repository.Save(resource)
@@ -78,7 +78,7 @@ func mongodbResource() *Resource {
 
 func TestFindAllResources(t *testing.T) {
 	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := PostgresRepository{db: db}
+	repository := NewPostgresRepository(db)
 
 	repository.Save(apacheResource())
 	repository.Save(mongodbResource())
