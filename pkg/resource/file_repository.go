@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -80,4 +81,8 @@ func (f *fileRepository) fillResourcesCache() {
 		return nil
 	})
 	f.resourcesCache = resources
+}
+
+func (f *fileRepository) Save(resources *Resource) error {
+	return errors.New("Operation not supported")
 }
