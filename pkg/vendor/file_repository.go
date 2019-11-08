@@ -1,6 +1,7 @@
 package vendor
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -77,4 +78,8 @@ func (f *fileRepository) fillVendorsCache() {
 		return nil
 	})
 	f.vendors = vendors
+}
+
+func (f *fileRepository) Save(vendor *Vendor) error {
+	return errors.New("Operation not supported")
 }

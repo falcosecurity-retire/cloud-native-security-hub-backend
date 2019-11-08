@@ -29,6 +29,7 @@ func (r *MemoryRepository) FindById(id string) (*Vendor, error) {
 	return nil, fmt.Errorf("not found")
 }
 
-func (r *MemoryRepository) Add(vendor Vendor) {
-	r.vendor = append(r.vendor, &vendor)
+func (r *MemoryRepository) Save(vendor *Vendor) error {
+	r.vendor = append(r.vendor, vendor)
+	return nil
 }
