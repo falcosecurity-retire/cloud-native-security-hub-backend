@@ -22,7 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	migrator.Up()
+	err = migrator.Up()
+	if err != nil && err != migrate.ErrNoChange {
+		log.Fatal(err)
+	}
 
 	resources, err := infrastructure.GetResourcesFromPath(os.Getenv("RESOURCES_PATH"))
 
@@ -30,6 +33,9 @@ func main() {
 	repository := resource.NewPostgresRepository(db)
 
 	for _, resource := range resources {
-		repository.Save(resource)
+		err = repository.Save(resource)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
