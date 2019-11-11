@@ -81,17 +81,7 @@ func (f *factory) NewResourcesRepository() resource.Repository {
 }
 
 func (f *factory) NewVendorRepository() vendor.Repository {
-	vendorPath, ok := os.LookupEnv("VENDOR_PATH")
-	if !ok {
-		log.Println("The VENDOR_PATH env var is not set")
-		os.Exit(1)
-	}
-	repo, err := vendor.FromPath(vendorPath)
-	if err != nil {
-		log.Println("the resource repository of type file does not exist")
-		os.Exit(1)
-	}
-	return repo
+	return vendor.NewPostgresRepository(f.db)
 }
 
 func (f *factory) newDB() *sql.DB {
