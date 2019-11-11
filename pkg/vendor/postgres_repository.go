@@ -44,6 +44,10 @@ func (r *postgresRepository) FindById(id string) (*Vendor, error) {
 	result := new(vendorForPostgres)
 	err := r.db.QueryRow(`SELECT raw FROM vendors WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(&result)
 
+	if err == sql.ErrNoRows {
+		return nil, ErrVendorNotFound
+	}
+
 	return (*Vendor)(result), err
 }
 

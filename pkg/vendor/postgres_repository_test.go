@@ -55,3 +55,13 @@ func TestFindAllVendors(t *testing.T) {
 
 	db.Exec("TRUNCATE TABLE vendors")
 }
+
+func TestFindVendorByIdDoesntFindTheVendor(t *testing.T) {
+	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	repository := NewPostgresRepository(db)
+
+	retrieved, err := repository.FindById("non existent id")
+
+	assert.Nil(t, retrieved)
+	assert.Equal(t, ErrVendorNotFound, err)
+}
