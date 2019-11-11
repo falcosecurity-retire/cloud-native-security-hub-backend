@@ -44,6 +44,10 @@ func (r *postgresRepository) FindById(id string) (*Resource, error) {
 	result := new(resourceForPostgres)
 	err := r.db.QueryRow(`SELECT raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(&result)
 
+	if err == sql.ErrNoRows {
+		return nil, ErrResourceNotFound
+	}
+
 	return (*Resource)(result), err
 }
 

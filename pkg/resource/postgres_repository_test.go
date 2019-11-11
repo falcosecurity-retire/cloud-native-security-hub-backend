@@ -88,3 +88,13 @@ func TestFindAllResources(t *testing.T) {
 
 	db.Exec("TRUNCATE TABLE security_resources")
 }
+
+func TestFindResourceByIdDoesntFindTheResource(t *testing.T) {
+	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	repository := NewPostgresRepository(db)
+
+	retrieved, err := repository.FindById("non existent id")
+
+	assert.Nil(t, retrieved)
+	assert.Equal(t, ErrResourceNotFound, err)
+}
