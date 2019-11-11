@@ -19,6 +19,7 @@ func TestAddAResource(t *testing.T) {
 	assert.Equal(t, resource, retrieved)
 
 	db.Exec("TRUNCATE TABLE security_resources")
+	db.Exec("TRUNCATE TABLE latest_security_resources")
 }
 
 func apacheResource() *Resource {
@@ -53,6 +54,7 @@ func mongodbResource() *Resource {
 	return &Resource{
 		Kind:        "FalcoRules",
 		Vendor:      "Mongo",
+		Version:     "1.0.0",
 		ID:          "mongodb",
 		Name:        "MongoDB",
 		Description: "# MongoDB Falco Rules\n",
@@ -87,6 +89,7 @@ func TestFindAllResources(t *testing.T) {
 	assert.Equal(t, []*Resource{apacheResource(), mongodbResource()}, retrieved)
 
 	db.Exec("TRUNCATE TABLE security_resources")
+	db.Exec("TRUNCATE TABLE latest_security_resources")
 }
 
 func TestFindResourceByIdDoesntFindTheResource(t *testing.T) {
@@ -97,4 +100,22 @@ func TestFindResourceByIdDoesntFindTheResource(t *testing.T) {
 
 	assert.Nil(t, retrieved)
 	assert.Equal(t, ErrResourceNotFound, err)
+}
+
+func TestFindResourceByIdReturnsLatestVersion(t *testing.T) {
+	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	repository := NewPostgresRepository(db)
+
+	apache := apacheResource()
+	repository.Save(apache)
+
+	apache.Version = "2.0.0"
+	repository.Save(apache)
+
+	retrieved, _ := repository.FindById("apache")
+
+	assert.Equal(t, apache, retrieved)
+
+	db.Exec("TRUNCATE TABLE security_resources")
+	db.Exec("TRUNCATE TABLE latest_security_resources")
 }
