@@ -119,3 +119,21 @@ func TestFindResourceByIdReturnsLatestVersion(t *testing.T) {
 	db.Exec("TRUNCATE TABLE security_resources")
 	db.Exec("TRUNCATE TABLE latest_security_resources")
 }
+
+func TestFindResourceByVersionReturnsItsVersion(t *testing.T) {
+	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	repository := NewPostgresRepository(db)
+
+	apache := apacheResource()
+	repository.Save(apache)
+
+	apache.Version = "2.0.0"
+	repository.Save(apache)
+
+	retrieved, _ := repository.FindByVersion("apache", "1.0.0")
+
+	assert.Equal(t, apacheResource(), retrieved)
+
+	db.Exec("TRUNCATE TABLE security_resources")
+	db.Exec("TRUNCATE TABLE latest_security_resources")
+}

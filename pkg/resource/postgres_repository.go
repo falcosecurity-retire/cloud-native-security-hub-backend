@@ -3,7 +3,6 @@ package resource
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"database/sql"
 	"database/sql/driver"
@@ -96,5 +95,12 @@ func (r *postgresRepository) FindAll() ([]*Resource, error) {
 }
 
 func (r *postgresRepository) FindByVersion(id string, version string) (*Resource, error) {
-	return nil, fmt.Errorf("not implemented")
+	result := new(resourceForPostgres)
+	err := r.db.QueryRow(`SELECT raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'version', $2::text)`, id, version).Scan(&result)
+	if err == sql.ErrNoRows {
+		return nil, ErrResourceNotFound
+	}
+
+	return (*Resource)(result), err
+
 }
