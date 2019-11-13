@@ -3,6 +3,7 @@ package resource
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"database/sql"
 	"database/sql/driver"
@@ -92,4 +93,8 @@ func (r *postgresRepository) FindAll() ([]*Resource, error) {
 	}
 
 	return result, err
+}
+
+func (r *postgresRepository) FindByVersion(id string, version string) (*Resource, error) {
+	return nil, fmt.Errorf("not implemented")
 }
