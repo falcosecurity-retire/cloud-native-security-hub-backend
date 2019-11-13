@@ -1,7 +1,10 @@
-package usecases
+package usecases_test
 
 import (
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,53 +12,29 @@ import (
 func memoryVendorRepository() vendor.Repository {
 	return vendor.NewMemoryRepository(
 		[]*vendor.Vendor{
-			{
-				ID:   "apache",
-				Name: "Apache",
-			},
-			{
-				ID:   "nginx",
-				Name: "Nginx",
-			},
+			vendors.Apache(), vendors.Mongo(),
 		},
 	)
 }
 
-func TestReturnsOneVendorByName(t *testing.T) {
-	useCase := RetrieveOneVendor{
-		VendorRepository: memoryVendorRepository(),
-		VendorID:         "apache",
-	}
-
-	res, _ := useCase.Execute()
-
-	assert.Equal(t, &vendor.Vendor{
-		ID:   "apache",
-		Name: "Apache",
-	}, res)
-}
-
 func TestReturnsOneVendorByID(t *testing.T) {
-	useCase := RetrieveOneVendor{
+	useCase := usecases.RetrieveOneVendor{
 		VendorRepository: memoryVendorRepository(),
 		VendorID:         "apache",
 	}
 
-	res, _ := useCase.Execute()
+	result, _ := useCase.Execute()
 
-	assert.Equal(t, &vendor.Vendor{
-		ID:   "apache",
-		Name: "Apache",
-	}, res)
+	assert.Equal(t, vendors.Apache(), result)
 }
 
 func TestReturnsOneVendorNotFound(t *testing.T) {
-	useCase := RetrieveOneVendor{
+	useCase := usecases.RetrieveOneVendor{
 		VendorRepository: memoryVendorRepository(),
 		VendorID:         "non-existent",
 	}
 
 	_, err := useCase.Execute()
 
-	assert.Error(t, err)
+	assert.Equal(t, vendor.ErrVendorNotFound, err)
 }

@@ -1,7 +1,6 @@
 package vendor
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -26,7 +25,7 @@ func (r *MemoryRepository) FindById(id string) (*Vendor, error) {
 			return res, nil
 		}
 	}
-	return nil, fmt.Errorf("not found")
+	return nil, ErrVendorNotFound
 }
 
 func (r *MemoryRepository) Save(vendor *Vendor) error {

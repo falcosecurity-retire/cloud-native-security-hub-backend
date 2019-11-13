@@ -1,25 +1,20 @@
-package usecases
+package usecases_test
 
 import (
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestReturnsAllResources(t *testing.T) {
-	resourceRepository := resource.NewMemoryRepository(
-		[]*resource.Resource{
-			&resource.Resource{Name: "Falco profile for Nginx"},
-			&resource.Resource{Name: "Falco profile for Grafana"},
-		},
-	)
+	existingResources := []*resource.Resource{resources.Apache(), resources.MongoDB()}
+	resourceRepository := resource.NewMemoryRepository(existingResources)
+	useCase := usecases.RetrieveAllResources{ResourceRepository: resourceRepository}
 
-	useCase := RetrieveAllResources{ResourceRepository: resourceRepository}
+	retrieved, _ := useCase.Execute()
 
-	resources, _ := useCase.Execute()
-
-	assert.Equal(t, []*resource.Resource{
-		{Name: "Falco profile for Nginx"},
-		{Name: "Falco profile for Grafana"},
-	}, resources)
+	assert.Equal(t, existingResources, retrieved)
 }

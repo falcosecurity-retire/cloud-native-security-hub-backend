@@ -1,28 +1,20 @@
-package usecases
+package usecases_test
 
 import (
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestReturnsAllVendors(t *testing.T) {
-	vendorRepository := vendor.NewMemoryRepository(
-		[]*vendor.Vendor{
-			&vendor.Vendor{Name: "Apache"},
-			&vendor.Vendor{Name: "Nginx"},
-		},
-	)
-	useCase := RetrieveAllVendors{VendorRepository: vendorRepository}
+	existingVendors := []*vendor.Vendor{vendors.Apache(), vendors.Mongo()}
+	vendorRepository := vendor.NewMemoryRepository(existingVendors)
+	useCase := usecases.RetrieveAllVendors{VendorRepository: vendorRepository}
 
-	resources, _ := useCase.Execute()
+	retrieved, _ := useCase.Execute()
 
-	assert.Equal(t, resources, []*vendor.Vendor{
-		{
-			Name: "Apache",
-		},
-		{
-			Name: "Nginx",
-		},
-	})
+	assert.Equal(t, existingVendors, retrieved)
 }
