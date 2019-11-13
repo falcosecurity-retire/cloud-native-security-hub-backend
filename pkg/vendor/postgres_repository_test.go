@@ -1,67 +1,48 @@
-package vendor
+package vendor_test
 
 import (
 	"database/sql"
 	"os"
 
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAddAVendor(t *testing.T) {
 	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := NewPostgresRepository(db)
+	repository := vendor.NewPostgresRepository(db)
 
-	vendor := apacheVendor()
-	repository.Save(vendor)
+	repository.Save(vendors.Apache())
 
 	retrieved, _ := repository.FindById("apache")
-	assert.Equal(t, vendor, retrieved)
+	assert.Equal(t, vendors.Apache(), retrieved)
 
 	db.Exec("TRUNCATE TABLE vendors")
 }
 
-func apacheVendor() *Vendor {
-	return &Vendor{
-		ID:          "apache",
-		Kind:        "Vendor",
-		Name:        "Apache",
-		Description: "# Apache Software Foundation\n",
-		Icon:        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Apache_Software_Foundation_Logo_%282016%29.svg/2560px-Apache_Software_Foundation_Logo_%282016%29.svg.png",
-		Website:     "https://apache.org/",
-	}
-}
-
-func mongodbVendor() *Vendor {
-	return &Vendor{
-		ID:          "mongo",
-		Kind:        "Vendor",
-		Name:        "Mongo",
-		Description: "# MongoDB Inc.\n",
-		Icon:        "https://upload.wikimedia.org/wikipedia/en/thumb/4/45/MongoDB-Logo.svg/640px-MongoDB-Logo.svg.png",
-		Website:     "https://mongodb.com/",
-	}
-}
-
 func TestFindAllVendors(t *testing.T) {
 	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := NewPostgresRepository(db)
+	repository := vendor.NewPostgresRepository(db)
 
-	repository.Save(apacheVendor())
-	repository.Save(mongodbVendor())
+	repository.Save(vendors.Apache())
+	repository.Save(vendors.Mongo())
 
 	retrieved, _ := repository.FindAll()
-	assert.Equal(t, []*Vendor{apacheVendor(), mongodbVendor()}, retrieved)
+
+	assert.Equal(t, []*vendor.Vendor{vendors.Apache(), vendors.Mongo()}, retrieved)
 
 	db.Exec("TRUNCATE TABLE vendors")
 }
 
 func TestFindVendorByIdDoesntFindTheVendor(t *testing.T) {
 	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := NewPostgresRepository(db)
+	repository := vendor.NewPostgresRepository(db)
 
 	retrieved, err := repository.FindById("non existent id")
 
 	assert.Nil(t, retrieved)
-	assert.Equal(t, ErrVendorNotFound, err)
+	assert.Equal(t, vendor.ErrVendorNotFound, err)
 }
