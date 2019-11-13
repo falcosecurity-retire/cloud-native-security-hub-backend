@@ -1,6 +1,8 @@
-package resource
+package resource_test
 
 import (
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -30,7 +32,7 @@ func TestResourceValidateVendor(t *testing.T) {
 func TestResourceValidateMaintainers(t *testing.T) {
 	resourceWithoutMaintainers := newResource()
 
-	resourceWithoutMaintainers.Maintainers = []*Maintainer{}
+	resourceWithoutMaintainers.Maintainers = []*resource.Maintainer{}
 
 	assert.Error(t, resourceWithoutMaintainers.Validate())
 }
@@ -43,8 +45,8 @@ func TestResourceValidateIcon(t *testing.T) {
 	assert.Error(t, resourceWithoutIcon.Validate())
 }
 
-func newResource() Resource {
-	return Resource{
+func newResource() resource.Resource {
+	return resource.Resource{
 		Kind:        "GrafanaDashboard",
 		Vendor:      "Sysdig",
 		Name:        "",
@@ -52,7 +54,7 @@ func newResource() Resource {
 		Rules:       nil,
 		Keywords:    []string{"monitoring"},
 		Icon:        "https://sysdig.com/icon.png",
-		Maintainers: []*Maintainer{
+		Maintainers: []*resource.Maintainer{
 			{
 				Name: "bencer",
 				Link: "github.com/bencer",
