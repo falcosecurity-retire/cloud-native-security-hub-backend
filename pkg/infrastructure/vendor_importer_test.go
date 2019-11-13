@@ -1,16 +1,17 @@
-package infrastructure
+package infrastructure_test
 
 import (
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/infrastructure"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
 	"github.com/stretchr/testify/assert"
 	"testing"
-
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
-	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
 )
 
 func TestGetVendorsWalksADirectoryAndExtractVendors(t *testing.T) {
 	path := "../../test/fixtures/vendors"
-	parsed, _ := GetVendorsFromPath(path)
+	parsed, _ := infrastructure.GetVendorsFromPath(path)
 
 	assert.Equal(t, []*vendor.Vendor{
 		vendors.Apache(),
@@ -21,7 +22,7 @@ func TestGetVendorsWalksADirectoryAndExtractVendors(t *testing.T) {
 func TestGetVendorsReturnsAnErrorIfPathDoesNotExist(t *testing.T) {
 	nonExistentPath := "../foo"
 
-	_, err := GetVendorsFromPath(nonExistentPath)
+	_, err := infrastructure.GetVendorsFromPath(nonExistentPath)
 
 	assert.Error(t, err)
 }
