@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
