@@ -24,11 +24,16 @@ func NewRouterWithLogger(logger *log.Logger) http.Handler {
 func registerOn(router *httprouter.Router, logger *log.Logger) {
 	h := NewHandlerRepository(logger)
 	router.GET("/resources", h.retrieveAllResourcesHandler)
+
 	router.GET("/resources/:resource", h.retrieveOneResourcesHandler)
 	router.GET("/resources/:resource/custom-rules.yaml", h.retrieveFalcoRulesForHelmChartHandler)
+
+	router.GET("/resources/:resource/version/:version", h.retrieveOneResourceByVersionHandler)
+
 	router.GET("/vendors", h.retrieveAllVendorsHandler)
 	router.GET("/vendors/:vendor", h.retrieveOneVendorsHandler)
 	router.GET("/vendors/:vendor/resources", h.retrieveAllResourcesFromVendorHandler)
+
 	router.GET("/health", h.healthCheckHandler)
 	router.NotFound = h.notFound()
 }

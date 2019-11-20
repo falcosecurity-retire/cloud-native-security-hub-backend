@@ -55,6 +55,11 @@ func TestRetrieveFalcoRulesForHelmChartHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID+"/custom-rules.yaml")
 }
 
+func TestRetrieveOneResourceByVersionHandlerReturnsHTTPOk(t *testing.T) {
+	apacheID := "apache"
+	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID+"/version/1.0.0")
+}
+
 func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {
 	testRetrieveAllReturnsHTTPOk(t, "/vendors")
 }
