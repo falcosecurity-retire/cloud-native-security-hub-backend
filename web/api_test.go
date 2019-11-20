@@ -2,18 +2,41 @@ package web
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
+
 	"net/http"
 	"net/http/httptest"
-	"os"
+
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	os.Setenv("RESOURCES_PATH", "../test/fixtures/resources")
-	os.Setenv("VENDOR_PATH", "../test/fixtures/vendors")
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	path := filepath.Join("testdata", "fixture.sql") // relative path
+	data, err := ioutil.ReadFile(path)
+
+	_, err = db.Exec(`TRUNCATE TABLE latest_security_resources;
+					  TRUNCATE TABLE security_resources;
+					  TRUNCATE TABLE vendors;
+					  TRUNCATE TABLE schema_migrations`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec(string(data))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	m.Run()
 }
@@ -23,13 +46,11 @@ func TestRetrieveAllResourcesHandlerReturnsHTTPOk(t *testing.T) {
 }
 
 func TestRetrieveOneResourceHandlerReturnsHTTPOk(t *testing.T) {
-	t.Skip("Disabled until fixture handling")
 	apacheID := "apache"
 	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID)
 }
 
 func TestRetrieveFalcoRulesForHelmChartHandlerReturnsHTTPOk(t *testing.T) {
-	t.Skip("Disabled until fixture handling")
 	apacheID := "apache"
 	testRetrieveAllReturnsHTTPOk(t, "/resources/"+apacheID+"/custom-rules.yaml")
 }
@@ -39,12 +60,10 @@ func TestRetrieveAllVendorsHandlerReturnsHTTPOk(t *testing.T) {
 }
 
 func TestRetrieveOneVendorsHandlerReturnsHTTPOk(t *testing.T) {
-	t.Skip("Disabled until fixture handling")
 	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache")
 }
 
 func TestRetrieveAllResourcesFromVendorHandlerReturnsHTTPOk(t *testing.T) {
-	t.Skip("Disabled until fixture handling")
 	testRetrieveAllReturnsHTTPOk(t, "/vendors/apache/resources")
 }
 
@@ -75,8 +94,6 @@ func testRetrieveAllHandlerReturnsAJSONResponse(t *testing.T, urlPath string) {
 }
 
 func TestRetrieveFalcoRulesForHelmChartReturnsAYAMLResponse(t *testing.T) {
-	t.Skip("Disabled until fixture handling")
-
 	apacheID := "apache"
 	request, _ := http.NewRequest("GET", "/resources/"+apacheID+"/custom-rules.yaml", nil)
 	recorder := httptest.NewRecorder()
@@ -87,7 +104,6 @@ func TestRetrieveFalcoRulesForHelmChartReturnsAYAMLResponse(t *testing.T) {
 }
 
 func TestLoggerIsLogging(t *testing.T) {
-	t.Skip("Disabled until fixture handling")
 	apacheID := "apache"
 	url := "/resources/" + apacheID + "/custom-rules.yaml"
 	request, _ := http.NewRequest("GET", url, nil)
