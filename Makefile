@@ -10,10 +10,12 @@ watch:
 	ag -l | entr -c go test -v ./...
 
 build:
-	docker build -t gcr.io/mateo-burillo-ns/securityhub-backend .
+	docker build -f Dockerfile.server -t gcr.io/mateo-burillo-ns/securityhub-backend .
+	docker build -f Dockerfile.dbimport -t gcr.io/mateo-burillo-ns/securityhub-dbimport .
 
 push: build
 	docker push gcr.io/mateo-burillo-ns/securityhub-backend
+	docker push gcr.io/mateo-burillo-ns/securityhub-dbimport
 
 deploy: deploy-backend deploy-frontend
 
