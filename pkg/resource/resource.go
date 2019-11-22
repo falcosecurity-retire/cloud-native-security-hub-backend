@@ -2,7 +2,6 @@ package resource
 
 import (
 	"encoding/json"
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"strings"
 )
@@ -83,29 +82,6 @@ type Maintainer struct {
 
 type FalcoRuleData struct {
 	Raw string `json:"raw" yaml:"raw"`
-}
-
-func (r *Resource) Validate() error {
-	var errors []string
-
-	if r.Kind == "" {
-		errors = append(errors, "the resource must have a defined Kind")
-	}
-	if r.Vendor == "" {
-		errors = append(errors, "the resource must be assigned to a vendor")
-	}
-	if len(r.Maintainers) == 0 {
-		errors = append(errors, "the resource must have at least one maintainer")
-	}
-	if r.Icon == "" {
-		errors = append(errors, "the resource must have a valid icon")
-	}
-
-	if len(errors) > 0 {
-		return fmt.Errorf(strings.Join(errors, ","))
-	}
-
-	return nil
 }
 
 func (r *Resource) generateID() string {
