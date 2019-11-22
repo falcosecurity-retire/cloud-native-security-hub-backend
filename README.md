@@ -15,12 +15,9 @@ the dependencies.
 
 ### Configuration
 
-You need to setup a couple of environment variables prior to run anything. As
-long as SecurityHub uses plain YAML files to manage security resources, you
-need to adjust its location:
-
-* `RESOURCES_PATH`: Path to securityhub/resources directory
-* `VENDOR_PATH`: Path to securityhub/vendors directory
+This project requires a PostgreSQL 11 server running. And you configure the app
+to attack the database using the `DATABASE_URL` environment variable, which contains
+the connection string for your server.
 
 ### cmd/server
 
@@ -29,6 +26,22 @@ This is the HTTP API server and it will listen to requests on `8080` port.
 ```
 $ go run cmd/server/main.go
 ```
+
+### cmd/dbimport
+
+You need to setup a couple of environment variables previously to import any
+data in the database:
+
+* `RESOURCES_PATH`: Path to securityhub/resources directory
+* `VENDOR_PATH`: Path to securityhub/vendors directory
+
+Then with the `DATABASE_URL` setted, execute:
+
+```
+$ go run cmd/dbimport/main.go
+```
+
+And voila!
 
 ## Contributing
 
@@ -44,3 +57,5 @@ some design decisions:
 * `web`: The web is just a delivery mechanism, is separated from the backend code,
   which can be used as a library if you need to. Is responsible to JSON
   marshalling and HTTP communications.
+* `db`: Contains the migration files for the database. When there are a change
+  in the schema, you will need to create the migration file.
