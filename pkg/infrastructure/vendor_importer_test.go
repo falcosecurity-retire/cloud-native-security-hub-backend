@@ -1,28 +1,34 @@
 package infrastructure_test
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/infrastructure"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
 	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
-	"github.com/stretchr/testify/assert"
-	"testing"
+
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/infrastructure"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 )
 
-func TestGetVendorsWalksADirectoryAndExtractVendors(t *testing.T) {
-	path := "../../test/fixtures/vendors"
-	parsed, _ := infrastructure.GetVendorsFromPath(path)
+var _ = Describe("Vendor importation from YAML files", func() {
+	It("walks a directory and extract resources", func() {
+		path := "../../test/fixtures/vendors"
+		parsed, _ := infrastructure.GetVendorsFromPath(path)
 
-	assert.Equal(t, []*vendor.Vendor{
-		vendors.Apache(),
-		vendors.Mongo(),
-	}, parsed)
-}
+		Expect(parsed).To(Equal([]*vendor.Vendor{
+			vendors.Apache(),
+			vendors.Mongo(),
+		}))
+	})
 
-func TestGetVendorsReturnsAnErrorIfPathDoesNotExist(t *testing.T) {
-	nonExistentPath := "../foo"
+	Context("when path doesn't exist", func() {
+		It("returns an error", func() {
+			nonExistentPath := "../foo"
 
-	_, err := infrastructure.GetVendorsFromPath(nonExistentPath)
+			parsed, err := infrastructure.GetVendorsFromPath(nonExistentPath)
 
-	assert.Error(t, err)
-}
+			Expect(parsed).To(BeEmpty())
+			Expect(err).To(HaveOccurred())
+		})
+	})
+})

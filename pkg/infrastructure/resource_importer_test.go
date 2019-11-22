@@ -1,28 +1,34 @@
 package infrastructure_test
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/infrastructure"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
 	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
-	"github.com/stretchr/testify/assert"
-	"testing"
+
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/infrastructure"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 )
 
-func TestGetResourcesFromPathWalksADirectoryAndExtractResources(t *testing.T) {
-	path := "../../test/fixtures/resources"
-	parsed, _ := infrastructure.GetResourcesFromPath(path)
+var _ = Describe("Resource importation from YAML files", func() {
+	It("walks a directory and extract resources", func() {
+		path := "../../test/fixtures/resources"
+		parsed, _ := infrastructure.GetResourcesFromPath(path)
 
-	assert.Equal(t, []*resource.Resource{
-		resources.Apache(),
-		resources.MongoDB(),
-	}, parsed)
-}
+		Expect(parsed).To(Equal([]*resource.Resource{
+			resources.Apache(),
+			resources.MongoDB(),
+		}))
+	})
 
-func TestGetResourcesFromPathReturnsAnErrorIfPathDoesNotExist(t *testing.T) {
-	nonExistentPath := "../foo"
+	Context("when path doesn't exist", func() {
+		It("returns an error", func() {
+			nonExistentPath := "../foo"
 
-	_, err := infrastructure.GetResourcesFromPath(nonExistentPath)
+			parsed, err := infrastructure.GetResourcesFromPath(nonExistentPath)
 
-	assert.Error(t, err)
-}
+			Expect(parsed).To(BeEmpty())
+			Expect(err).To(HaveOccurred())
+		})
+	})
+})
