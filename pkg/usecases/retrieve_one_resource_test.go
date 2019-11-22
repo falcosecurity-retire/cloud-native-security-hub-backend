@@ -1,7 +1,10 @@
-package usecases
+package usecases_test
 
 import (
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,45 +12,29 @@ import (
 func memoryResourceRepository() resource.Repository {
 	return resource.NewMemoryRepository(
 		[]*resource.Resource{
-			&resource.Resource{
-				Kind:   resource.FALCO_RULE,
-				Name:   "Falco profile for Nginx",
-				Vendor: "Nginx",
-				ID:     "nginx",
-			},
-			&resource.Resource{
-				Kind:   resource.FALCO_RULE,
-				Name:   "Falco profile for Traefik",
-				Vendor: "Traefik",
-				ID:     "traefik",
-			},
+			resources.Apache(), resources.MongoDB(),
 		},
 	)
 }
 
 func TestReturnsOneResource(t *testing.T) {
-	useCase := RetrieveOneResource{
+	useCase := usecases.RetrieveOneResource{
 		ResourceRepository: memoryResourceRepository(),
-		ResourceID:         "nginx",
+		ResourceID:         "apache",
 	}
 
-	res, _ := useCase.Execute()
+	result, _ := useCase.Execute()
 
-	assert.Equal(t, &resource.Resource{
-		Kind:   resource.FALCO_RULE,
-		Name:   "Falco profile for Nginx",
-		Vendor: "Nginx",
-		ID:     "nginx",
-	}, res)
+	assert.Equal(t, resources.Apache(), result)
 }
 
 func TestReturnsResourceNotFound(t *testing.T) {
-	useCase := RetrieveOneResource{
+	useCase := usecases.RetrieveOneResource{
 		ResourceRepository: memoryResourceRepository(),
 		ResourceID:         "notFound",
 	}
 
 	_, err := useCase.Execute()
 
-	assert.Error(t, err)
+	assert.Equal(t, resource.ErrResourceNotFound, err)
 }

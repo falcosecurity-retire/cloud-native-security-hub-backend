@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -26,9 +25,19 @@ func (r *MemoryRepository) FindById(id string) (*Resource, error) {
 			return res, nil
 		}
 	}
-	return nil, fmt.Errorf("not found")
+	return nil, ErrResourceNotFound
 }
 
-func (r *MemoryRepository) Add(resource Resource) {
-	r.resources = append(r.resources, &resource)
+func (r *MemoryRepository) Save(resource *Resource) error {
+	r.resources = append(r.resources, resource)
+	return nil
+}
+
+func (r *MemoryRepository) FindByVersion(id string, version string) (*Resource, error) {
+	for _, res := range r.resources {
+		if res.ID == strings.ToLower(id) && res.Version == version {
+			return res, nil
+		}
+	}
+	return nil, ErrResourceNotFound
 }

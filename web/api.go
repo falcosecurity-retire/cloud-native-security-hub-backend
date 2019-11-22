@@ -11,13 +11,17 @@ import (
 
 type HandlerRepository interface {
 	notFound() http.HandlerFunc
+	healthCheckHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+
 	retrieveAllResourcesHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
+
 	retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	retrieveOneResourceByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+
 	retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveAllResourcesFromVendorHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
-	healthCheckHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }
 
 type handlerRepository struct {
@@ -89,6 +93,20 @@ func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.Re
 	writer.Header().Set("Content-Type", "application/x-yaml")
 	h.logRequest(request, 200)
 	writer.Write(content)
+}
+
+func (h *handlerRepository) retrieveOneResourceByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	useCase := h.factory.NewRetrieveOneResourceByVersionUseCase(params.ByName("resource"), params.ByName("version"))
+	resources, err := useCase.Execute()
+	if err != nil {
+		writer.WriteHeader(500)
+		h.logRequest(request, 500)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	h.logRequest(request, 200)
+	json.NewEncoder(writer).Encode(resources)
 }
 
 func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {

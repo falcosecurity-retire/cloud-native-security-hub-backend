@@ -1,52 +1,38 @@
-package usecases
+package usecases_test
 
 import (
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func memoryResourceRepositoryWithRules() resource.Repository {
 	return resource.NewMemoryRepository(
-		[]*resource.Resource{
-			{
-				ID:     "nginx",
-				Kind:   resource.FALCO_RULE,
-				Name:   "Falco profile for Nginx",
-				Vendor: "Nginx",
-				Rules: []*resource.FalcoRuleData{
-					{Raw: "nginxRule"},
-				},
-			},
-			{
-				ID:     "traefik",
-				Kind:   "GrafanaDashboard",
-				Name:   "Grafana Dashboard for Traefik",
-				Vendor: "Traefik",
-				Rules: []*resource.FalcoRuleData{
-					{Raw: "traefikRule"},
-				},
-			},
-		},
+		[]*resource.Resource{resources.Apache(), resources.MongoDB()},
 	)
 }
 
 func TestReturnsFalcoRulesForHelmChart(t *testing.T) {
-	useCase := RetrieveFalcoRulesForHelmChart{
+	useCase := usecases.RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: memoryResourceRepositoryWithRules(),
-		ResourceID:         "nginx",
+		ResourceID:         "apache",
 	}
 
 	result, _ := useCase.Execute()
-	expected := `customRules:
-  rules-nginx.yaml: nginxRule
-`
 
+	expected := `customRules:
+  rules-apache.yaml: |
+    - macro: apache_consider_syscalls
+      condition: (evt.num < 0)
+`
 	assert.Equal(t, expected, string(result))
 }
 
 func TestFalcoRulesForHelmChartReturnsNotFound(t *testing.T) {
-	useCase := RetrieveFalcoRulesForHelmChart{
+	useCase := usecases.RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: memoryResourceRepositoryWithRules(),
 		ResourceID:         "notFound",
 	}

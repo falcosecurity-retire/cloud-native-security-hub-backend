@@ -16,6 +16,7 @@ const (
 type Resource struct {
 	ID               string           `json:"id,omitempty" yaml:"id,omitempty"`
 	Kind             Kind             `json:"kind" yaml:"kind"`
+	Version          string           `json:"version" yaml:"version"`
 	Vendor           string           `json:"vendor" yaml:"vendor"`
 	Name             string           `json:"name" yaml:"name"`
 	ShortDescription string           `json:"shortDescription" yaml:"shortDescription"`

@@ -3,6 +3,7 @@ apiVersion: v1
 kind: FalcoRules
 vendor: Apache
 name: Apache
+version: 1.0.0
 description: |
   # Apache Falco Rules
 keywords:
