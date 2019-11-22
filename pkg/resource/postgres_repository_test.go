@@ -1,85 +1,80 @@
 package resource_test
 
 import (
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
+
 	"database/sql"
 	"os"
 
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
-
-	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestAddAResource(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := resource.NewPostgresRepository(db)
+var _ = Describe("Postgres Resource Repository", func() {
+	var repository resource.Repository
 
-	repository.Save(resources.Apache())
+	BeforeEach(func() {
+		db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		repository = resource.NewPostgresRepository(db)
 
-	retrieved, _ := repository.FindById("apache")
-	assert.Equal(t, resources.Apache(), retrieved)
+		db.Exec("TRUNCATE TABLE security_resources")
+		db.Exec("TRUNCATE TABLE latest_security_resources")
+	})
 
-	db.Exec("TRUNCATE TABLE security_resources")
-	db.Exec("TRUNCATE TABLE latest_security_resources")
-}
+	It("saves a new resource", func() {
+		repository.Save(resources.Apache())
 
-func TestFindAllResources(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := resource.NewPostgresRepository(db)
+		retrieved, _ := repository.FindById("apache")
+		Expect(retrieved).To(Equal(resources.Apache()))
+	})
 
-	repository.Save(resources.Apache())
-	repository.Save(resources.MongoDB())
+	It("retrieves all existent resources", func() {
+		repository.Save(resources.Apache())
+		repository.Save(resources.MongoDB())
 
-	retrieved, _ := repository.FindAll()
-	assert.Equal(t, []*resource.Resource{resources.Apache(), resources.MongoDB()}, retrieved)
+		retrieved, _ := repository.FindAll()
 
-	db.Exec("TRUNCATE TABLE security_resources")
-	db.Exec("TRUNCATE TABLE latest_security_resources")
-}
+		Expect(retrieved).To(Equal([]*resource.Resource{
+			resources.Apache(),
+			resources.MongoDB()}))
+	})
 
-func TestFindResourceByIdDoesntFindTheResource(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := resource.NewPostgresRepository(db)
+	Context("when querying by id", func() {
+		Context("and resource is not found", func() {
+			It("returns an error", func() {
+				retrieved, err := repository.FindById("non existent id")
 
-	retrieved, err := repository.FindById("non existent id")
+				Expect(retrieved).To(BeNil())
+				Expect(err).To(HaveOccurred())
+			})
+		})
 
-	assert.Nil(t, retrieved)
-	assert.Equal(t, resource.ErrResourceNotFound, err)
-}
+		It("returns latest version of the resource", func() {
+			apache := resources.Apache()
+			repository.Save(apache)
 
-func TestFindResourceByIdReturnsLatestVersion(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := resource.NewPostgresRepository(db)
+			apache.Version = "2.0.0"
+			repository.Save(apache)
 
-	apache := resources.Apache()
-	repository.Save(apache)
+			retrieved, _ := repository.FindById("apache")
 
-	apache.Version = "2.0.0"
-	repository.Save(apache)
+			Expect(retrieved).To(Equal(apache))
+		})
 
-	retrieved, _ := repository.FindById("apache")
+		Context("and version is specified as well", func() {
+			It("returns the resource with the specified version", func() {
+				apache := resources.Apache()
+				repository.Save(apache)
 
-	assert.Equal(t, apache, retrieved)
+				apache.Version = "2.0.0"
+				repository.Save(apache)
 
-	db.Exec("TRUNCATE TABLE security_resources")
-	db.Exec("TRUNCATE TABLE latest_security_resources")
-}
+				retrieved, _ := repository.FindByVersion("apache", "1.0.0")
 
-func TestFindResourceByVersionReturnsItsVersion(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := resource.NewPostgresRepository(db)
-
-	apache := resources.Apache()
-	repository.Save(apache)
-
-	apache.Version = "2.0.0"
-	repository.Save(apache)
-
-	retrieved, _ := repository.FindByVersion("apache", "1.0.0")
-
-	assert.Equal(t, resources.Apache(), retrieved)
-
-	db.Exec("TRUNCATE TABLE security_resources")
-	db.Exec("TRUNCATE TABLE latest_security_resources")
-}
+				Expect(retrieved).To(Equal(resources.Apache()))
+			})
+		})
+	})
+})
