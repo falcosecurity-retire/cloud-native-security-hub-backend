@@ -1,40 +1,38 @@
 package usecases_test
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
 	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
-	"github.com/stretchr/testify/assert"
-	"testing"
+
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 )
 
-func memoryResourceRepository() resource.Repository {
-	return resource.NewMemoryRepository(
-		[]*resource.Resource{
-			resources.Apache(), resources.MongoDB(),
-		},
-	)
-}
+var _ = Describe("RetrieveOneResource use case", func() {
+	It("returns one resource", func() {
+		useCase := usecases.RetrieveOneResource{
+			ResourceRepository: NewResourceRepository(),
+			ResourceID:         "apache",
+		}
 
-func TestReturnsOneResource(t *testing.T) {
-	useCase := usecases.RetrieveOneResource{
-		ResourceRepository: memoryResourceRepository(),
-		ResourceID:         "apache",
-	}
+		result, _ := useCase.Execute()
 
-	result, _ := useCase.Execute()
+		Expect(result).To(Equal(resources.Apache()))
+	})
 
-	assert.Equal(t, resources.Apache(), result)
-}
+	Context("when resource does not exist", func() {
+		It("returns resource not found error", func() {
+			useCase := usecases.RetrieveOneResource{
+				ResourceRepository: NewResourceRepository(),
+				ResourceID:         "notFound",
+			}
 
-func TestReturnsResourceNotFound(t *testing.T) {
-	useCase := usecases.RetrieveOneResource{
-		ResourceRepository: memoryResourceRepository(),
-		ResourceID:         "notFound",
-	}
+			retrieved, err := useCase.Execute()
 
-	_, err := useCase.Execute()
-
-	assert.Equal(t, resource.ErrResourceNotFound, err)
-}
+			Expect(retrieved).To(BeNil())
+			Expect(err).To(MatchError(resource.ErrResourceNotFound))
+		})
+	})
+})

@@ -1,62 +1,61 @@
 package usecases_test
 
 import (
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 
 	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
-	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func memoryResourceRepositoryFromVendor() resource.Repository {
+var _ = Describe("RetrieveAllResourcesFromVendor use case", func() {
+	It("returns all the avaliable resources for a vendor", func() {
+		useCase := usecases.RetrieveAllResourcesFromVendor{
+			VendorID:           "apache",
+			ResourceRepository: newResourceRepositoryWithoutMongoDB(),
+			VendorRepository:   NewVendorRepository(),
+		}
+
+		retrieved, _ := useCase.Execute()
+
+		Expect(retrieved).To(Equal([]*resource.Resource{resources.Apache()}))
+	})
+
+	Context("when vendor does not exist", func() {
+		It("returns vendor not found error", func() {
+			useCase := usecases.RetrieveAllResourcesFromVendor{
+				VendorID:           "not-found",
+				ResourceRepository: newResourceRepositoryWithoutMongoDB(),
+				VendorRepository:   NewVendorRepository(),
+			}
+
+			retrieved, err := useCase.Execute()
+
+			Expect(retrieved).To(BeEmpty())
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	PContext("when vendor doesn't have resources", func() {
+		It("returns an empty resource collection", func() {
+			useCase := usecases.RetrieveAllResourcesFromVendor{
+				VendorID:           "mongo",
+				ResourceRepository: newResourceRepositoryWithoutMongoDB(),
+				VendorRepository:   NewVendorRepository(),
+			}
+
+			retrieved, err := useCase.Execute()
+
+			Expect(retrieved).To(BeEmpty())
+			Expect(err).To(Succeed())
+		})
+	})
+})
+
+func newResourceRepositoryWithoutMongoDB() resource.Repository {
 	return resource.NewMemoryRepository(
-		[]*resource.Resource{resources.Apache(), resources.MongoDB()},
+		[]*resource.Resource{resources.Apache()},
 	)
-}
-
-func memoryVendorRepositoryFromVendor() vendor.Repository {
-	return vendor.NewMemoryRepository(
-		[]*vendor.Vendor{vendors.Apache(), vendors.Mongo()},
-	)
-}
-
-func TestReturnsAllResourcesFromVendor(t *testing.T) {
-	useCase := usecases.RetrieveAllResourcesFromVendor{
-		VendorID:           "apache",
-		ResourceRepository: memoryResourceRepositoryFromVendor(),
-		VendorRepository:   memoryVendorRepositoryFromVendor(),
-	}
-
-	retrieved, _ := useCase.Execute()
-
-	assert.Equal(t, []*resource.Resource{resources.Apache()}, retrieved)
-}
-
-func TestReturnsVendorNotFoundResourcesFromVendor(t *testing.T) {
-	useCase := usecases.RetrieveAllResourcesFromVendor{
-		VendorID:           "not-found",
-		ResourceRepository: memoryResourceRepositoryFromVendor(),
-		VendorRepository:   memoryVendorRepositoryFromVendor(),
-	}
-
-	_, err := useCase.Execute()
-
-	assert.Error(t, err)
-}
-
-// FIXME: If the vendor exists and doesn't have resources it should return an empty array
-// This is not an error
-func TestReturnsResourcesNotFoundResourcesFromVendor(t *testing.T) {
-	useCase := usecases.RetrieveAllResourcesFromVendor{
-		VendorID:           "nginx",
-		ResourceRepository: memoryResourceRepositoryFromVendor(),
-		VendorRepository:   memoryVendorRepositoryFromVendor(),
-	}
-
-	_, err := useCase.Execute()
-
-	assert.Error(t, err) //vendor exists but has no resources
 }

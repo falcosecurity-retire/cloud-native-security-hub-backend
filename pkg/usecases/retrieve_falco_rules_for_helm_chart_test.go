@@ -1,43 +1,40 @@
 package usecases_test
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 )
 
-func memoryResourceRepositoryWithRules() resource.Repository {
-	return resource.NewMemoryRepository(
-		[]*resource.Resource{resources.Apache(), resources.MongoDB()},
-	)
-}
+var _ = Describe("RetrieveFalcoRulesForHelmChart use case", func() {
+	It("returns the rules for being used with the Helm chart", func() {
+		useCase := usecases.RetrieveFalcoRulesForHelmChart{
+			ResourceRepository: NewResourceRepository(),
+			ResourceID:         "apache",
+		}
 
-func TestReturnsFalcoRulesForHelmChart(t *testing.T) {
-	useCase := usecases.RetrieveFalcoRulesForHelmChart{
-		ResourceRepository: memoryResourceRepositoryWithRules(),
-		ResourceID:         "apache",
-	}
+		result, _ := useCase.Execute()
 
-	result, _ := useCase.Execute()
-
-	expected := `customRules:
+		expected := `customRules:
   rules-apache.yaml: |
     - macro: apache_consider_syscalls
       condition: (evt.num < 0)
 `
-	assert.Equal(t, expected, string(result))
-}
+		Expect(expected).To(Equal(string(result)))
+	})
 
-func TestFalcoRulesForHelmChartReturnsNotFound(t *testing.T) {
-	useCase := usecases.RetrieveFalcoRulesForHelmChart{
-		ResourceRepository: memoryResourceRepositoryWithRules(),
-		ResourceID:         "notFound",
-	}
+	Context("when resource doesn't exist", func() {
+		It("it returns a resource not found error", func() {
+			useCase := usecases.RetrieveFalcoRulesForHelmChart{
+				ResourceRepository: NewResourceRepository(),
+				ResourceID:         "notFound",
+			}
 
-	_, err := useCase.Execute()
+			_, err := useCase.Execute()
 
-	assert.Error(t, err)
-}
+			Expect(err).To(HaveOccurred())
+		})
+
+	})
+})

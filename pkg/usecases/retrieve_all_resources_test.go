@@ -1,20 +1,22 @@
 package usecases_test
 
 import (
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
 	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/resources"
-	"github.com/stretchr/testify/assert"
-	"testing"
+
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 )
 
-func TestReturnsAllResources(t *testing.T) {
-	existingResources := []*resource.Resource{resources.Apache(), resources.MongoDB()}
-	resourceRepository := resource.NewMemoryRepository(existingResources)
-	useCase := usecases.RetrieveAllResources{ResourceRepository: resourceRepository}
+var _ = Describe("RetrieveAllResources use case", func() {
+	It("returns all the available resources", func() {
+		existingResources := []*resource.Resource{resources.Apache(), resources.MongoDB()}
+		useCase := usecases.RetrieveAllResources{ResourceRepository: NewResourceRepository()}
 
-	retrieved, _ := useCase.Execute()
+		retrieved, _ := useCase.Execute()
 
-	assert.Equal(t, existingResources, retrieved)
-}
+		Expect(retrieved).To(Equal(existingResources))
+	})
+})
