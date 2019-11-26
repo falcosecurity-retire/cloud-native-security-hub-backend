@@ -1,48 +1,52 @@
 package vendor_test
 
 import (
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
+	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
+
 	"database/sql"
 	"os"
 
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
-
-	"github.com/falcosecurity/cloud-native-security-hub/test/fixtures/vendors"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestAddAVendor(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := vendor.NewPostgresRepository(db)
+var _ = Describe("Postgres Vendor Repository", func() {
+	var repository vendor.Repository
 
-	repository.Save(vendors.Apache())
+	BeforeEach(func() {
+		db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		repository = vendor.NewPostgresRepository(db)
 
-	retrieved, _ := repository.FindById("apache")
-	assert.Equal(t, vendors.Apache(), retrieved)
+		db.Exec("TRUNCATE TABLE vendors")
+	})
 
-	db.Exec("TRUNCATE TABLE vendors")
-}
+	It("saves a new vendor", func() {
+		repository.Save(vendors.Apache())
 
-func TestFindAllVendors(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := vendor.NewPostgresRepository(db)
+		retrieved, _ := repository.FindById("apache")
 
-	repository.Save(vendors.Apache())
-	repository.Save(vendors.Mongo())
+		Expect(retrieved).To(Equal(vendors.Apache()))
+	})
 
-	retrieved, _ := repository.FindAll()
+	It("retrieves all existent vendors", func() {
+		repository.Save(vendors.Apache())
+		repository.Save(vendors.Mongo())
 
-	assert.Equal(t, []*vendor.Vendor{vendors.Apache(), vendors.Mongo()}, retrieved)
+		retrieved, _ := repository.FindAll()
 
-	db.Exec("TRUNCATE TABLE vendors")
-}
+		Expect(retrieved).To(Equal([]*vendor.Vendor{vendors.Apache(), vendors.Mongo()}))
+	})
 
-func TestFindVendorByIdDoesntFindTheVendor(t *testing.T) {
-	db, _ := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	repository := vendor.NewPostgresRepository(db)
+	Context("when querying by id", func() {
+		Context("and vendor does not exist", func() {
+			It("returns an error", func() {
+				retrieved, err := repository.FindById("non existent id")
 
-	retrieved, err := repository.FindById("non existent id")
-
-	assert.Nil(t, retrieved)
-	assert.Equal(t, vendor.ErrVendorNotFound, err)
-}
+				Expect(retrieved).To(BeNil())
+				Expect(err).To(MatchError(vendor.ErrVendorNotFound))
+			})
+		})
+	})
+})
