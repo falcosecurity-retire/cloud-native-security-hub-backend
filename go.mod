@@ -1,6 +1,6 @@
 module github.com/falcosecurity/cloud-native-security-hub
 
-go 1.12
+go 1.13
 
 require (
 	github.com/Masterminds/semver v1.5.0
@@ -10,6 +10,5 @@ require (
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/rs/cors v1.7.0
-	github.com/stretchr/testify v1.3.0
 	gopkg.in/yaml.v2 v2.2.2
 )
