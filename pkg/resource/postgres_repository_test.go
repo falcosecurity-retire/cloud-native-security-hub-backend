@@ -77,4 +77,18 @@ var _ = Describe("Postgres Resource Repository", func() {
 			})
 		})
 	})
+
+	Context("when saving several versions for a resource", func() {
+		It("returns all all available versions", func() {
+			apache := resources.Apache()
+			repository.Save(apache)
+
+			apache.Version = "2.0.0"
+			repository.Save(apache)
+
+			retrieved, _ := repository.FindById("apache")
+
+			Expect(retrieved.AvailableVersions).To(Equal([]string{"1.0.0", "2.0.0"}))
+		})
+	})
 })
