@@ -6,7 +6,7 @@ import (
 
 	"database/sql"
 	"database/sql/driver"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 
 	"github.com/Masterminds/semver"
 )
@@ -69,11 +69,14 @@ func retrieveExistingVersion(transaction *sql.Tx, resource *Resource) string {
 
 func (r *postgresRepository) FindById(id string) (*Resource, error) {
 	result := new(resourceForPostgres)
-	err := r.db.QueryRow(`SELECT raw FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(&result)
+	availableVersions := []string{}
+	err := r.db.QueryRow(`SELECT available_versions, raw FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(pq.Array(&availableVersions), &result)
 
 	if err == sql.ErrNoRows {
 		return nil, ErrResourceNotFound
 	}
+
+	result.AvailableVersions = availableVersions
 
 	return (*Resource)(result), err
 }
