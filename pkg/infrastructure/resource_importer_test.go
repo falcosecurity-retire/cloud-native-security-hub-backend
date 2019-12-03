@@ -16,8 +16,8 @@ var _ = Describe("Resource importation from YAML files", func() {
 		parsed, _ := infrastructure.GetResourcesFromPath(path)
 
 		Expect(parsed).To(Equal([]*resource.Resource{
-			resources.Apache(),
-			resources.MongoDB(),
+			resources.ApacheWithoutAvailableVersions(),
+			resources.MongoDBWithoutAvailableVersions(),
 		}))
 	})
 

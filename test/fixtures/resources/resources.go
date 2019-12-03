@@ -5,6 +5,13 @@ import (
 )
 
 func Apache() *resource.Resource {
+	result := ApacheWithoutAvailableVersions()
+	result.AvailableVersions = []string{"1.0.0"}
+
+	return result
+}
+
+func ApacheWithoutAvailableVersions() *resource.Resource {
 	return &resource.Resource{
 		ID:          "apache",
 		Kind:        "FalcoRules",
@@ -33,6 +40,13 @@ func Apache() *resource.Resource {
 }
 
 func MongoDB() *resource.Resource {
+	result := MongoDBWithoutAvailableVersions()
+	result.AvailableVersions = []string{"1.0.0"}
+
+	return result
+}
+
+func MongoDBWithoutAvailableVersions() *resource.Resource {
 	return &resource.Resource{
 		Kind:        "FalcoRules",
 		Vendor:      "Mongo",

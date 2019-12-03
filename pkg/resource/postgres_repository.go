@@ -36,9 +36,7 @@ func (r *resourceForPostgres) Scan(value interface{}) error {
 
 func (r *postgresRepository) Save(resource *Resource) error {
 	transaction, err := r.db.Begin()
-	_, err = transaction.Exec(
-		"INSERT INTO security_resources(raw) VALUES($1)",
-		resourceForPostgres(*resource))
+	_, err = transaction.Exec("INSERT INTO security_resources(raw) VALUES($1)", resourceForPostgres(*resource))
 
 	if existent := retrieveExistingVersion(transaction, resource); existent == "" {
 		_, err = transaction.Exec(
@@ -57,6 +55,10 @@ func (r *postgresRepository) Save(resource *Resource) error {
 		}
 	}
 
+	availableVersions := r.retrieveAvailableVersions(resource.ID)
+	_, err = r.db.Exec("UPDATE security_resources SET available_versions = $1 WHERE raw @> jsonb_build_object('id', $2::text) ", pq.Array(availableVersions), resource.ID)
+	_, err = r.db.Exec("UPDATE latest_security_resources SET available_versions = $1 WHERE raw @> jsonb_build_object('id', $2::text) ", pq.Array(availableVersions), resource.ID)
+
 	return err
 }
 
@@ -65,6 +67,13 @@ func retrieveExistingVersion(transaction *sql.Tx, resource *Resource) string {
 	transaction.QueryRow(`SELECT raw ->> 'version' AS version FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, resource.ID).Scan(&existent)
 
 	return existent
+}
+
+func (r *postgresRepository) retrieveAvailableVersions(id string) []string {
+	var availableVersions = []string{}
+	r.db.QueryRow(`SELECT ARRAY(SELECT raw ->> 'version' from security_resources WHERE raw ->> 'id' = $1::text) FROM security_resources WHERE raw ->> 'id' = $1::text LIMIT 1;`, id).Scan(pq.Array(&availableVersions))
+
+	return availableVersions
 }
 
 func (r *postgresRepository) FindById(id string) (*Resource, error) {
@@ -82,15 +91,17 @@ func (r *postgresRepository) FindById(id string) (*Resource, error) {
 }
 
 func (r *postgresRepository) FindAll() ([]*Resource, error) {
-	rows, err := r.db.Query(`SELECT raw FROM latest_security_resources`)
+	rows, err := r.db.Query(`SELECT available_versions, raw FROM latest_security_resources`)
 	defer rows.Close()
 
 	var result []*Resource
 	for rows.Next() {
+		availableVersions := []string{}
 		current := new(resourceForPostgres)
-		if err = rows.Scan(&current); err != nil {
+		if err = rows.Scan(pq.Array(&availableVersions), &current); err != nil {
 			return nil, err
 		}
+		current.AvailableVersions = availableVersions
 		result = append(result, (*Resource)(current))
 	}
 
@@ -99,11 +110,12 @@ func (r *postgresRepository) FindAll() ([]*Resource, error) {
 
 func (r *postgresRepository) FindByVersion(id string, version string) (*Resource, error) {
 	result := new(resourceForPostgres)
-	err := r.db.QueryRow(`SELECT raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'version', $2::text)`, id, version).Scan(&result)
+	availableVersions := []string{}
+	err := r.db.QueryRow(`SELECT available_versions, raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'version', $2::text)`, id, version).Scan(pq.Array(&availableVersions), &result)
 	if err == sql.ErrNoRows {
 		return nil, ErrResourceNotFound
 	}
 
+	result.AvailableVersions = availableVersions
 	return (*Resource)(result), err
-
 }
