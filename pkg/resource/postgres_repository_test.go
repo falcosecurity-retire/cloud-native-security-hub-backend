@@ -62,7 +62,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 
 			expected := resources.Apache()
 			expected.Version = "2.0.0"
-			expected.AvailableVersions = []string{"1.0.0", "2.0.0"}
+			expected.AvailableVersions = []string{"2.0.0", "1.0.0"}
 			Expect(retrieved).To(Equal(expected))
 		})
 
@@ -77,14 +77,14 @@ var _ = Describe("Postgres Resource Repository", func() {
 				retrieved, _ := repository.FindByVersion("apache", "1.0.0")
 
 				expected := resources.Apache()
-				expected.AvailableVersions = []string{"1.0.0", "2.0.0"}
+				expected.AvailableVersions = []string{"2.0.0", "1.0.0"}
 				Expect(retrieved).To(Equal(expected))
 			})
 		})
 	})
 
 	Context("when saving several versions for a resource", func() {
-		It("returns all available versions", func() {
+		It("returns all available versions, newer first", func() {
 			apache := resources.Apache()
 			repository.Save(apache)
 
@@ -93,7 +93,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 
 			retrieved, _ := repository.FindById("apache")
 
-			Expect(retrieved.AvailableVersions).To(Equal([]string{"1.0.0", "2.0.0"}))
+			Expect(retrieved.AvailableVersions).To(Equal([]string{"2.0.0", "1.0.0"}))
 		})
 	})
 })

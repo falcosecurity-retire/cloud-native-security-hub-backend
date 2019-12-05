@@ -71,7 +71,7 @@ func retrieveExistingVersion(transaction *sql.Tx, resource *Resource) string {
 
 func (r *postgresRepository) retrieveAvailableVersions(id string) []string {
 	var availableVersions = []string{}
-	r.db.QueryRow(`SELECT ARRAY(SELECT raw ->> 'version' from security_resources WHERE raw ->> 'id' = $1::text) FROM security_resources WHERE raw ->> 'id' = $1::text LIMIT 1;`, id).Scan(pq.Array(&availableVersions))
+	r.db.QueryRow(`SELECT ARRAY(SELECT raw ->> 'version' from security_resources WHERE raw ->> 'id' = $1::text ORDER BY raw ->> 'version' DESC) FROM security_resources WHERE raw ->> 'id' = $1::text LIMIT 1;`, id).Scan(pq.Array(&availableVersions))
 
 	return availableVersions
 }
