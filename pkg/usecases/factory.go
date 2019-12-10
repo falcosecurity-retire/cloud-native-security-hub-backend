@@ -14,6 +14,7 @@ type Factory interface {
 	NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneResource
 	NewRetrieveOneResourceByVersionUseCase(resourceID string, version string) *RetrieveOneResourceByVersion
 	NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart
+	NewIncrementDownloadCountUseCase(resourceID string) *IncrementDownloadCount
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 	NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor
@@ -27,6 +28,7 @@ func NewFactory() Factory {
 	factory.db = factory.newDB()
 	factory.resourceRepository = factory.NewResourcesRepository()
 	factory.vendorRepository = factory.NewVendorRepository()
+	factory.resourceUpdater = factory.NewResourceUpdaterWithDB(factory.db)
 	return factory
 }
 
@@ -34,6 +36,7 @@ type factory struct {
 	db                 *sql.DB
 	vendorRepository   vendor.Repository
 	resourceRepository resource.Repository
+	resourceUpdater    resource.Updater
 }
 
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
@@ -61,6 +64,13 @@ func (f *factory) NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *R
 	return &RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: f.resourceRepository,
 		ResourceID:         resourceID,
+	}
+}
+
+func (f *factory) NewIncrementDownloadCountUseCase(resourceID string) *IncrementDownloadCount {
+	return &IncrementDownloadCount{
+		Updater:    f.resourceUpdater,
+		ResourceID: resourceID,
 	}
 }
 
@@ -101,4 +111,8 @@ func (f *factory) newDB() *sql.DB {
 	}
 
 	return db
+}
+
+func (f *factory) NewResourceUpdaterWithDB(db *sql.DB) resource.Updater {
+	return resource.NewPostgresUpdater(db)
 }

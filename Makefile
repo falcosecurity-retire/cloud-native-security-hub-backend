@@ -1,15 +1,19 @@
 .PHONY: test build push
 
-test:
-	go test -v ./...
+test: generate
+	#go test -v ./...
+	CGO_ENABLED=1 ginkgo -r -randomizeSuites -race
 
-dev:
+generate:
+	go generate -x ./...
+
+dev: generate
 	RESOURCES_PATH=test/fixtures/resources VENDOR_PATH=test/fixtures/vendors go run cmd/server/main.go
 
-watch:
-	ag -l | entr -c go test -v ./...
+watch: generate
+	ag -l | entr -c ginkgo -r -randomizeSuites
 
-build:
+build: generate
 	docker build -f Dockerfile.server -t gcr.io/mateo-burillo-ns/securityhub-backend .
 	docker build -f Dockerfile.dbimport -t gcr.io/mateo-burillo-ns/securityhub-dbimport .
 

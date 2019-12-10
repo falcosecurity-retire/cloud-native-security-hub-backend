@@ -1,6 +1,7 @@
 package web_test
 
 import (
+	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -55,6 +56,24 @@ var _ = Describe("HTTP API for resources", func() {
 			response := doGetRequest("/resources/apache/custom-rules.yaml")
 
 			Expect(response.Header.Get("Content-Type"), "application/x-yaml")
+		})
+
+		It("increases the download count", func() {
+			var data map[string]interface{}
+
+			response := doGetRequest("/resources/apache")
+			json.NewDecoder(response.Body).Decode(&data)
+			response.Body.Close()
+			firstDownloadValue := data["download_count"].(float64)
+
+			doGetRequest("/resources/apache/custom-rules.yaml")
+
+			response = doGetRequest("/resources/apache")
+			json.NewDecoder(response.Body).Decode(&data)
+			response.Body.Close()
+			secondDownloadValue := data["download_count"].(float64)
+
+			Expect(secondDownloadValue).To(Equal(firstDownloadValue + 1))
 		})
 
 		PContext("when name is not found", func() {

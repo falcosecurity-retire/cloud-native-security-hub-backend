@@ -77,31 +77,41 @@ func (r *postgresRepository) retrieveAvailableVersions(id string) []string {
 }
 
 func (r *postgresRepository) FindById(id string) (*Resource, error) {
-	result := new(resourceForPostgres)
-	availableVersions := []string{}
-	err := r.db.QueryRow(`SELECT available_versions, raw FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(pq.Array(&availableVersions), &result)
+	var (
+		result            *resourceForPostgres
+		availableVersions []string
+		downloadCount     uint
+	)
+
+	err := r.db.QueryRow(`SELECT available_versions, download_count, raw FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(pq.Array(&availableVersions), &downloadCount, &result)
 
 	if err == sql.ErrNoRows {
 		return nil, ErrResourceNotFound
 	}
 
 	result.AvailableVersions = availableVersions
+	result.DownloadCount = downloadCount
 
 	return (*Resource)(result), err
 }
 
 func (r *postgresRepository) FindAll() ([]*Resource, error) {
-	rows, err := r.db.Query(`SELECT available_versions, raw FROM latest_security_resources`)
+	rows, err := r.db.Query(`SELECT available_versions, download_count, raw FROM latest_security_resources`)
 	defer rows.Close()
 
 	var result []*Resource
 	for rows.Next() {
-		availableVersions := []string{}
-		current := new(resourceForPostgres)
-		if err = rows.Scan(pq.Array(&availableVersions), &current); err != nil {
+		var (
+			availableVersions []string
+			current           *resourceForPostgres
+			downloadCount     uint
+		)
+
+		if err = rows.Scan(pq.Array(&availableVersions), &downloadCount, &current); err != nil {
 			return nil, err
 		}
 		current.AvailableVersions = availableVersions
+		current.DownloadCount = downloadCount
 		result = append(result, (*Resource)(current))
 	}
 
@@ -109,13 +119,17 @@ func (r *postgresRepository) FindAll() ([]*Resource, error) {
 }
 
 func (r *postgresRepository) FindByVersion(id string, version string) (*Resource, error) {
-	result := new(resourceForPostgres)
-	availableVersions := []string{}
-	err := r.db.QueryRow(`SELECT available_versions, raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'version', $2::text)`, id, version).Scan(pq.Array(&availableVersions), &result)
+	var (
+		result            *resourceForPostgres
+		availableVersions []string
+		downloadCount     uint
+	)
+	err := r.db.QueryRow(`SELECT available_versions, download_count, raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'version', $2::text)`, id, version).Scan(pq.Array(&availableVersions), &downloadCount, &result)
 	if err == sql.ErrNoRows {
 		return nil, ErrResourceNotFound
 	}
 
 	result.AvailableVersions = availableVersions
+	result.DownloadCount = downloadCount
 	return (*Resource)(result), err
 }

@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/golang-migrate/migrate/v4 v4.7.0
+	github.com/golang/mock v1.2.0
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/lib/pq v1.0.0
 	github.com/onsi/ginkgo v1.10.3

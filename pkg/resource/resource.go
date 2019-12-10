@@ -26,6 +26,7 @@ type Resource struct {
 	Website           string           `json:"website" yaml:"website"`
 	Maintainers       []*Maintainer    `json:"maintainers" yaml:"maintainers"`
 	Rules             []*FalcoRuleData `json:"rules" yaml:"rules"`
+	DownloadCount     uint             `json:"download_count" yaml:"-"`
 }
 
 func (r *Resource) GenerateRulesForHelmChart() []byte {
