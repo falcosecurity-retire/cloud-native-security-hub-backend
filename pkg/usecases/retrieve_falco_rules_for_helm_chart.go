@@ -7,7 +7,7 @@ import (
 
 type RetrieveFalcoRulesForHelmChart struct {
 	ResourceRepository resource.Repository
-	EventHandler       event.Handler
+	EventDispatcher    event.Dispatcher
 	Updater            resource.Updater
 	ResourceID         string
 }
@@ -17,7 +17,7 @@ func (useCase *RetrieveFalcoRulesForHelmChart) Execute() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	useCase.EventHandler.Dispatch(&event.RetrievedResource{
+	useCase.EventDispatcher.Dispatch(&event.RetrievedResource{
 		ResourceID: useCase.ResourceID,
 		Updater:    useCase.Updater,
 	})

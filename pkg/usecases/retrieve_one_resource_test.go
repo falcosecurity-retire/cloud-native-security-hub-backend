@@ -16,15 +16,15 @@ import (
 
 var _ = Describe("RetrieveOneResource use case", func() {
 	var (
-		mockCtrl         *gomock.Controller
-		mockUpdater      *mock_resource.MockUpdater
-		mockEventHandler *mock_event.MockHandler
+		mockCtrl            *gomock.Controller
+		mockUpdater         *mock_resource.MockUpdater
+		mockEventDispatcher *mock_event.MockDispatcher
 	)
 
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockUpdater = mock_resource.NewMockUpdater(mockCtrl)
-		mockEventHandler = mock_event.NewMockHandler(mockCtrl)
+		mockEventDispatcher = mock_event.NewMockDispatcher(mockCtrl)
 	})
 
 	AfterEach(func() {
@@ -32,8 +32,8 @@ var _ = Describe("RetrieveOneResource use case", func() {
 	})
 
 	It("returns one resource", func() {
-		mockEventHandler.EXPECT().
-			HandleEvent(gomock.Eq(&event.RetrievedResource{
+		mockEventDispatcher.EXPECT().
+			Dispatch(gomock.Eq(&event.RetrievedResource{
 				ResourceID: "apache",
 				Updater:    mockUpdater,
 			})).
@@ -50,7 +50,7 @@ var _ = Describe("RetrieveOneResource use case", func() {
 		useCase := usecases.RetrieveOneResource{
 			ResourceRepository: NewResourceRepository(),
 			ResourceID:         "apache",
-			EventHandler:       mockEventHandler,
+			EventDispatcher:    mockEventDispatcher,
 			Updater:            mockUpdater,
 		}
 
@@ -61,8 +61,8 @@ var _ = Describe("RetrieveOneResource use case", func() {
 
 	Context("when resource does not exist", func() {
 		It("returns resource not found error", func() {
-			mockEventHandler.EXPECT().
-				HandleEvent(gomock.Eq(&event.RetrievedResource{
+			mockEventDispatcher.EXPECT().
+				Dispatch(gomock.Eq(&event.RetrievedResource{
 					ResourceID: "notFound",
 					Updater:    mockUpdater,
 				})).
@@ -79,7 +79,7 @@ var _ = Describe("RetrieveOneResource use case", func() {
 			useCase := usecases.RetrieveOneResource{
 				ResourceRepository: NewResourceRepository(),
 				ResourceID:         "notFound",
-				EventHandler:       mockEventHandler,
+				EventDispatcher:    mockEventDispatcher,
 				Updater:            mockUpdater,
 			}
 

@@ -13,15 +13,15 @@ import (
 
 var _ = Describe("RetrieveFalcoRulesForHelmChart use case", func() {
 	var (
-		mockCtrl         *gomock.Controller
-		mockUpdater      *mock_resource.MockUpdater
-		mockEventHandler *mock_event.MockHandler
+		mockCtrl           *gomock.Controller
+		mockUpdater        *mock_resource.MockUpdater
+		newEventDispatcher *mock_event.MockDispatcher
 	)
 
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockUpdater = mock_resource.NewMockUpdater(mockCtrl)
-		mockEventHandler = mock_event.NewMockHandler(mockCtrl)
+		newEventDispatcher = mock_event.NewMockDispatcher(mockCtrl)
 	})
 
 	AfterEach(func() {
@@ -29,8 +29,8 @@ var _ = Describe("RetrieveFalcoRulesForHelmChart use case", func() {
 	})
 
 	It("returns the rules for being used with the Helm chart", func() {
-		mockEventHandler.EXPECT().
-			HandleEvent(gomock.Eq(&event.RetrievedResource{
+		newEventDispatcher.EXPECT().
+			Dispatch(gomock.Eq(&event.RetrievedResource{
 				ResourceID: "apache",
 				Updater:    mockUpdater,
 			})).
@@ -46,7 +46,7 @@ var _ = Describe("RetrieveFalcoRulesForHelmChart use case", func() {
 
 		useCase := usecases.RetrieveFalcoRulesForHelmChart{
 			ResourceRepository: NewResourceRepository(),
-			EventHandler:       mockEventHandler,
+			EventDispatcher:    newEventDispatcher,
 			Updater:            mockUpdater,
 			ResourceID:         "apache",
 		}

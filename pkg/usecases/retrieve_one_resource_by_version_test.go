@@ -16,15 +16,15 @@ import (
 
 var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 	var (
-		mockCtrl         *gomock.Controller
-		mockUpdater      *mock_resource.MockUpdater
-		mockEventHandler *mock_event.MockHandler
+		mockCtrl          *gomock.Controller
+		mockUpdater       *mock_resource.MockUpdater
+		newMockDispatcher *mock_event.MockDispatcher
 	)
 
 	BeforeEach(func() {
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockUpdater = mock_resource.NewMockUpdater(mockCtrl)
-		mockEventHandler = mock_event.NewMockHandler(mockCtrl)
+		newMockDispatcher = mock_event.NewMockDispatcher(mockCtrl)
 	})
 
 	AfterEach(func() {
@@ -37,8 +37,8 @@ var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 			Times(1).
 			Return(nil)
 
-		mockEventHandler.EXPECT().
-			HandleEvent(gomock.Eq(&event.RetrievedResource{
+		newMockDispatcher.EXPECT().
+			Dispatch(gomock.Eq(&event.RetrievedResource{
 				ResourceID: "apache",
 				Updater:    mockUpdater,
 			})).
@@ -52,7 +52,7 @@ var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 			ResourceID:         "apache",
 			Version:            "1.0.1",
 			Updater:            mockUpdater,
-			EventHandler:       mockEventHandler,
+			EventDispatcher:    newMockDispatcher,
 		}
 
 		result, _ := useCase.Execute()
@@ -69,8 +69,8 @@ var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 				Times(1).
 				Return(resource.ErrResourceNotFound)
 
-			mockEventHandler.EXPECT().
-				HandleEvent(gomock.Eq(&event.RetrievedResource{
+			newMockDispatcher.EXPECT().
+				Dispatch(gomock.Eq(&event.RetrievedResource{
 					ResourceID: "apache",
 					Updater:    mockUpdater,
 				})).
@@ -83,7 +83,7 @@ var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 				ResourceRepository: newResourceRepositoryWithVersions(),
 				ResourceID:         "apache",
 				Version:            "2.0.0",
-				EventHandler:       mockEventHandler,
+				EventDispatcher:    newMockDispatcher,
 				Updater:            mockUpdater,
 			}
 

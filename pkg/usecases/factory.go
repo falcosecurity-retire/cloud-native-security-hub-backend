@@ -29,7 +29,7 @@ func NewFactory() Factory {
 	factory.resourceRepository = factory.NewResourcesRepository()
 	factory.vendorRepository = factory.NewVendorRepository()
 	factory.resourceUpdater = factory.NewResourceUpdaterWithDB(factory.db)
-	factory.eventHandler = event.NewHandler()
+	factory.eventDispatcher = event.NewEventDispatcher()
 	return factory
 }
 
@@ -38,7 +38,7 @@ type factory struct {
 	vendorRepository   vendor.Repository
 	resourceRepository resource.Repository
 	resourceUpdater    resource.Updater
-	eventHandler       event.Handler
+	eventDispatcher    event.Dispatcher
 }
 
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
@@ -51,7 +51,7 @@ func (f *factory) NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneR
 	return &RetrieveOneResource{
 		ResourceRepository: f.resourceRepository,
 		ResourceID:         resourceID,
-		EventHandler:       f.eventHandler,
+		EventDispatcher:    f.eventDispatcher,
 		Updater:            f.resourceUpdater,
 	}
 }
@@ -59,7 +59,7 @@ func (f *factory) NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneR
 func (f *factory) NewRetrieveOneResourceByVersionUseCase(resourceID string, version string) *RetrieveOneResourceByVersion {
 	return &RetrieveOneResourceByVersion{
 		ResourceRepository: f.resourceRepository,
-		EventHandler:       f.eventHandler,
+		EventDispatcher:    f.eventDispatcher,
 		Updater:            f.resourceUpdater,
 		ResourceID:         resourceID,
 		Version:            version,
@@ -69,7 +69,7 @@ func (f *factory) NewRetrieveOneResourceByVersionUseCase(resourceID string, vers
 func (f *factory) NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart {
 	return &RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: f.resourceRepository,
-		EventHandler:       f.eventHandler,
+		EventDispatcher:    f.eventDispatcher,
 		Updater:            f.resourceUpdater,
 		ResourceID:         resourceID,
 	}

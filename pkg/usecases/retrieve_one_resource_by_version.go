@@ -7,14 +7,14 @@ import (
 
 type RetrieveOneResourceByVersion struct {
 	ResourceRepository resource.Repository
-	EventHandler       event.Handler
+	EventDispatcher    event.Dispatcher
 	ResourceID         string
 	Version            string
 	Updater            resource.Updater
 }
 
 func (useCase *RetrieveOneResourceByVersion) Execute() (res *resource.Resource, err error) {
-	useCase.EventHandler.Dispatch(&event.RetrievedResource{
+	useCase.EventDispatcher.Dispatch(&event.RetrievedResource{
 		ResourceID: useCase.ResourceID,
 		Updater:    useCase.Updater,
 	})
