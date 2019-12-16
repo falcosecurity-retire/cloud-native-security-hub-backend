@@ -19,8 +19,9 @@ func (h asyncDispatcher) Dispatch(event Interface) {
 }
 
 func NewEventDispatcher() Dispatcher {
+	const maxChannelSize = 1000000
 	handler := &asyncDispatcher{
-		eventChannel: make(chan Interface),
+		eventChannel: make(chan Interface, maxChannelSize),
 	}
 	go dispatchAsyncEvents(handler)
 	return handler
