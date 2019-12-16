@@ -83,21 +83,14 @@ func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWrit
 
 func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	resourceID := params.ByName("resource")
-	helmChartUseCase := h.factory.NewRetrieveFalcoRulesForHelmChartUseCase(resourceID)
-	incrementUseCase := h.factory.NewIncrementDownloadCountUseCase(resourceID)
-	content, err := helmChartUseCase.Execute()
+	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartUseCase(resourceID)
+	content, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
 		writer.Write([]byte(err.Error()))
 		return
 	}
-
-	err = incrementUseCase.Execute()
-	if err != nil {
-		h.logger.Printf("unable to increment the download count for %s: %v", resourceID, err)
-	}
-
 	writer.Header().Set("Content-Type", "application/x-yaml")
 	h.logRequest(request, 200)
 	writer.Write(content)

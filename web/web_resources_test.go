@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"net/http"
 )
 
@@ -61,19 +60,21 @@ var _ = Describe("HTTP API for resources", func() {
 		It("increases the download count", func() {
 			var data map[string]interface{}
 
+			// Increases by 1
 			response := doGetRequest("/resources/apache")
 			json.NewDecoder(response.Body).Decode(&data)
 			response.Body.Close()
 			firstDownloadValue := data["download_count"].(float64)
 
-			doGetRequest("/resources/apache/custom-rules.yaml")
+			secondDownloadValue := func() float64 {
+				// Increases by 1
+				response = doGetRequest("/resources/apache")
+				json.NewDecoder(response.Body).Decode(&data)
+				response.Body.Close()
+				return data["download_count"].(float64)
+			}
 
-			response = doGetRequest("/resources/apache")
-			json.NewDecoder(response.Body).Decode(&data)
-			response.Body.Close()
-			secondDownloadValue := data["download_count"].(float64)
-
-			Expect(secondDownloadValue).To(Equal(firstDownloadValue + 1))
+			Eventually(secondDownloadValue).Should(BeNumerically(">", firstDownloadValue))
 		})
 
 		PContext("when name is not found", func() {

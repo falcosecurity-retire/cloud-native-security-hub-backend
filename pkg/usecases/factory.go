@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/event"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
 )
@@ -14,7 +15,6 @@ type Factory interface {
 	NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneResource
 	NewRetrieveOneResourceByVersionUseCase(resourceID string, version string) *RetrieveOneResourceByVersion
 	NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart
-	NewIncrementDownloadCountUseCase(resourceID string) *IncrementDownloadCount
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 	NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor
@@ -29,6 +29,7 @@ func NewFactory() Factory {
 	factory.resourceRepository = factory.NewResourcesRepository()
 	factory.vendorRepository = factory.NewVendorRepository()
 	factory.resourceUpdater = factory.NewResourceUpdaterWithDB(factory.db)
+	factory.eventHandler = event.NewHandler()
 	return factory
 }
 
@@ -37,6 +38,7 @@ type factory struct {
 	vendorRepository   vendor.Repository
 	resourceRepository resource.Repository
 	resourceUpdater    resource.Updater
+	eventHandler       event.Handler
 }
 
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
@@ -49,12 +51,16 @@ func (f *factory) NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneR
 	return &RetrieveOneResource{
 		ResourceRepository: f.resourceRepository,
 		ResourceID:         resourceID,
+		EventHandler:       f.eventHandler,
+		Updater:            f.resourceUpdater,
 	}
 }
 
 func (f *factory) NewRetrieveOneResourceByVersionUseCase(resourceID string, version string) *RetrieveOneResourceByVersion {
 	return &RetrieveOneResourceByVersion{
 		ResourceRepository: f.resourceRepository,
+		EventHandler:       f.eventHandler,
+		Updater:            f.resourceUpdater,
 		ResourceID:         resourceID,
 		Version:            version,
 	}
@@ -63,14 +69,9 @@ func (f *factory) NewRetrieveOneResourceByVersionUseCase(resourceID string, vers
 func (f *factory) NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart {
 	return &RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: f.resourceRepository,
+		EventHandler:       f.eventHandler,
+		Updater:            f.resourceUpdater,
 		ResourceID:         resourceID,
-	}
-}
-
-func (f *factory) NewIncrementDownloadCountUseCase(resourceID string) *IncrementDownloadCount {
-	return &IncrementDownloadCount{
-		Updater:    f.resourceUpdater,
-		ResourceID: resourceID,
 	}
 }
 
