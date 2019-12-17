@@ -17,7 +17,9 @@ type HandlerRepository interface {
 
 	retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+
 	retrieveOneResourceByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	retrieveFalcoRulesForHelmChartByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 
 	retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params)
 	retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
@@ -107,6 +109,20 @@ func (h *handlerRepository) retrieveOneResourceByVersionHandler(writer http.Resp
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
 	json.NewEncoder(writer).Encode(resources)
+}
+
+func (h *handlerRepository) retrieveFalcoRulesForHelmChartByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartByVersionUseCase(params.ByName("resource"), params.ByName("version"))
+	content, err := useCase.Execute()
+	if err != nil {
+		writer.WriteHeader(500)
+		h.logRequest(request, 500)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+	writer.Header().Set("Content-Type", "application/x-yaml")
+	h.logRequest(request, 200)
+	writer.Write(content)
 }
 
 func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {

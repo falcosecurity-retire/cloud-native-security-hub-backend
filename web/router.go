@@ -29,6 +29,7 @@ func registerOn(router *httprouter.Router, logger *log.Logger) {
 	router.GET("/resources/:resource/custom-rules.yaml", h.retrieveFalcoRulesForHelmChartHandler)
 
 	router.GET("/resources/:resource/version/:version", h.retrieveOneResourceByVersionHandler)
+	router.GET("/resources/:resource/version/:version/custom-rules.yaml", h.retrieveFalcoRulesForHelmChartByVersionHandler)
 
 	router.GET("/vendors", h.retrieveAllVendorsHandler)
 	router.GET("/vendors/:vendor", h.retrieveOneVendorsHandler)

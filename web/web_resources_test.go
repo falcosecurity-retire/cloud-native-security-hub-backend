@@ -87,4 +87,27 @@ var _ = Describe("HTTP API for resources", func() {
 			})
 		})
 	})
+
+	Context("GET /resources/:name/version/:version/custom-rules.yaml", func() {
+		It("returns OK", func() {
+			response := doGetRequest("/resources/apache/version/1.0.0/custom-rules.yaml")
+
+			Expect(response.StatusCode).To(Equal(http.StatusOK))
+		})
+
+		It("returns an YAML response", func() {
+			response := doGetRequest("/resources/apache/version/1.0.0/custom-rules.yaml")
+
+			Expect(response.Header.Get("Content-Type"), "application/x-yaml")
+		})
+
+		PContext("when name is not found", func() {
+			It("returns a NOTFOUND", func() {
+				response := doGetRequest("/resources/apache/version/4.0.0/custom-rules.yaml")
+
+				Expect(response.StatusCode).To(Equal(http.StatusNotFound))
+			})
+		})
+	})
+
 })
