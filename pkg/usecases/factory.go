@@ -14,6 +14,7 @@ type Factory interface {
 	NewRetrieveOneResourceUseCase(resourceID string) *RetrieveOneResource
 	NewRetrieveOneResourceByVersionUseCase(resourceID string, version string) *RetrieveOneResourceByVersion
 	NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart
+	NewRetrieveFalcoRulesForHelmChartByVersionUseCase(resourceID string, version string) *RetrieveFalcoRulesForHelmChartByVersion
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
 	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
 	NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor
@@ -61,6 +62,14 @@ func (f *factory) NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *R
 	return &RetrieveFalcoRulesForHelmChart{
 		ResourceRepository: f.resourceRepository,
 		ResourceID:         resourceID,
+	}
+}
+
+func (f *factory) NewRetrieveFalcoRulesForHelmChartByVersionUseCase(resourceID string, version string) *RetrieveFalcoRulesForHelmChartByVersion {
+	return &RetrieveFalcoRulesForHelmChartByVersion{
+		ResourceRepository: f.resourceRepository,
+		ResourceID:         resourceID,
+		Version:            version,
 	}
 }
 
