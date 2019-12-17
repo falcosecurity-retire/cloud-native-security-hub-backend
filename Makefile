@@ -1,7 +1,7 @@
 .PHONY: test build push
 
 test:
-	go test -v ./...
+	GO15VENDOREXPERIMENT=0 ginkgo -r .
 
 dev:
 	RESOURCES_PATH=test/fixtures/resources VENDOR_PATH=test/fixtures/vendors go run cmd/server/main.go
