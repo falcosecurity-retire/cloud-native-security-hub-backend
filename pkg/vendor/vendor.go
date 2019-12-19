@@ -3,8 +3,10 @@ package vendor
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"strings"
+
+	"github.com/gosimple/slug"
+	"gopkg.in/yaml.v2"
 )
 
 type Kind string
@@ -77,5 +79,5 @@ func (r *Vendor) Validate() error {
 }
 
 func (r *Vendor) generateID() string {
-	return strings.ToLower(r.Name)
+	return slug.Make(r.Name)
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 	"github.com/falcosecurity/cloud-native-security-hub/pkg/vendor"
-	"strings"
 )
 
 type RetrieveAllResourcesFromVendor struct {
@@ -18,7 +17,6 @@ func (useCase *RetrieveAllResourcesFromVendor) Execute() (res []*resource.Resour
 	if err != nil {
 		return
 	}
-	vendorName := strings.ToLower(vendor.Name)
 
 	resources, err := useCase.ResourceRepository.FindAll()
 	if err != nil {
@@ -26,8 +24,7 @@ func (useCase *RetrieveAllResourcesFromVendor) Execute() (res []*resource.Resour
 	}
 
 	for _, r := range resources {
-		resourceVendorName := strings.ToLower(r.Vendor)
-		if vendorName == resourceVendorName {
+		if vendor.Name == r.Vendor {
 			res = append(res, r)
 		}
 	}

@@ -1,9 +1,5 @@
 package resource
 
-import (
-	"strings"
-)
-
 type MemoryRepository struct {
 	resources []*Resource
 }
@@ -19,9 +15,8 @@ func (r *MemoryRepository) FindAll() ([]*Resource, error) {
 }
 
 func (r *MemoryRepository) FindById(id string) (*Resource, error) {
-	idToFind := strings.ToLower(id)
 	for _, res := range r.resources {
-		if res.ID == idToFind {
+		if res.ID == id {
 			return res, nil
 		}
 	}
@@ -35,7 +30,7 @@ func (r *MemoryRepository) Save(resource *Resource) error {
 
 func (r *MemoryRepository) FindByVersion(id string, version string) (*Resource, error) {
 	for _, res := range r.resources {
-		if res.ID == strings.ToLower(id) && res.Version == version {
+		if res.ID == id && res.Version == version {
 			return res, nil
 		}
 	}

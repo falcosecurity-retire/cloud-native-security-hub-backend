@@ -2,8 +2,9 @@ package resource
 
 import (
 	"encoding/json"
+
+	"github.com/gosimple/slug"
 	"gopkg.in/yaml.v2"
-	"strings"
 )
 
 type Kind string
@@ -86,5 +87,5 @@ type FalcoRuleData struct {
 }
 
 func (r *Resource) generateID() string {
-	return strings.ToLower(r.Name)
+	return slug.Make(r.Name)
 }

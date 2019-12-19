@@ -1,9 +1,5 @@
 package vendor
 
-import (
-	"strings"
-)
-
 type MemoryRepository struct {
 	vendor []*Vendor
 }
@@ -19,9 +15,8 @@ func (r *MemoryRepository) FindAll() ([]*Vendor, error) {
 }
 
 func (r *MemoryRepository) FindById(id string) (*Vendor, error) {
-	idToFind := strings.ToLower(id)
 	for _, res := range r.vendor {
-		if res.ID == idToFind {
+		if res.ID == id {
 			return res, nil
 		}
 	}
