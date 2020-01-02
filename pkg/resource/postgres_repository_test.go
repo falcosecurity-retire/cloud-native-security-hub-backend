@@ -26,7 +26,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 	It("saves a new resource", func() {
 		repository.Save(resources.Apache())
 
-		retrieved, _ := repository.FindById("apache")
+		retrieved, _ := repository.FindById(resource.NewResourceID("apache", "FalcoRules"))
 		Expect(retrieved).To(Equal(resources.Apache()))
 	})
 
@@ -44,7 +44,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 	Context("when querying by id", func() {
 		Context("and resource is not found", func() {
 			It("returns an error", func() {
-				retrieved, err := repository.FindById("non existent id")
+				retrieved, err := repository.FindById(resource.NewResourceID("non existent id", "non existent kind"))
 
 				Expect(retrieved).To(BeNil())
 				Expect(err).To(HaveOccurred())
@@ -58,7 +58,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 			apache.Version = "2.0.0"
 			repository.Save(apache)
 
-			retrieved, _ := repository.FindById("apache")
+			retrieved, _ := repository.FindById(resource.NewResourceID("apache", "FalcoRules"))
 
 			expected := resources.Apache()
 			expected.Version = "2.0.0"
@@ -74,7 +74,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 				apache.Version = "2.0.0"
 				repository.Save(apache)
 
-				retrieved, _ := repository.FindByVersion("apache", "1.0.0")
+				retrieved, _ := repository.FindByVersion(resource.NewResourceID("apache", "FalcoRules"), "1.0.0")
 
 				expected := resources.Apache()
 				expected.AvailableVersions = []string{"2.0.0", "1.0.0"}
@@ -91,7 +91,7 @@ var _ = Describe("Postgres Resource Repository", func() {
 			apache.Version = "2.0.0"
 			repository.Save(apache)
 
-			retrieved, _ := repository.FindById("apache")
+			retrieved, _ := repository.FindById(resource.NewResourceID("apache", "FalcoRules"))
 
 			Expect(retrieved.AvailableVersions).To(Equal([]string{"2.0.0", "1.0.0"}))
 		})

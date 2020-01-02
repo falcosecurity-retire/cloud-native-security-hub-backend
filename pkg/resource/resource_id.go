@@ -15,3 +15,11 @@ func NewResourceID(name, kind string) ResourceID {
 		kind: kind,
 	}
 }
+
+func (r *ResourceID) Slug() string {
+	return r.slug
+}
+
+func (r *ResourceID) Kind() string {
+	return r.kind
+}

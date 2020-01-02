@@ -1,11 +1,7 @@
 package resource
 
 import (
-	"encoding/json"
-	"errors"
-
 	"database/sql"
-	"database/sql/driver"
 	"github.com/lib/pq"
 
 	"github.com/Masterminds/semver"
@@ -19,29 +15,16 @@ func NewPostgresRepository(db *sql.DB) Repository {
 	return &postgresRepository{db: db}
 }
 
-type resourceForPostgres Resource
-
-func (r resourceForPostgres) Value() (driver.Value, error) {
-	return json.Marshal(r)
-}
-
-func (r *resourceForPostgres) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("type assertion to []byte failed")
-	}
-
-	return json.Unmarshal(bytes, &r)
-}
-
 func (r *postgresRepository) Save(resource *Resource) error {
 	transaction, err := r.db.Begin()
-	_, err = transaction.Exec("INSERT INTO security_resources(raw) VALUES($1)", resourceForPostgres(*resource))
+	resourceDTO := NewResourceDTO(resource)
+
+	_, err = transaction.Exec("INSERT INTO security_resources(raw) VALUES($1)", resourceDTO)
 
 	if existent := retrieveExistingVersion(transaction, resource); existent == "" {
 		_, err = transaction.Exec(
 			"INSERT INTO latest_security_resources(raw) VALUES($1)",
-			resourceForPostgres(*resource))
+			resourceDTO)
 		transaction.Commit()
 	} else {
 		newVersion, _ := semver.NewVersion(resource.Version)
@@ -49,37 +32,44 @@ func (r *postgresRepository) Save(resource *Resource) error {
 
 		if newVersion.GreaterThan(existentVersion) {
 			_, err = transaction.Exec(
-				"UPDATE latest_security_resources SET raw = $1 WHERE raw @> jsonb_build_object('id', $2::text)",
-				resourceForPostgres(*resource), resource.ID)
+				"UPDATE latest_security_resources SET raw = $1 WHERE raw @> jsonb_build_object('id', $2::text, 'kind', $3::text)",
+				resourceDTO,
+				resource.ID.Slug(),
+				resource.ID.Kind())
 			transaction.Commit()
 		}
 	}
 
 	availableVersions := r.retrieveAvailableVersions(resource.ID)
-	_, err = r.db.Exec("UPDATE security_resources SET available_versions = $1 WHERE raw @> jsonb_build_object('id', $2::text) ", pq.Array(availableVersions), resource.ID)
-	_, err = r.db.Exec("UPDATE latest_security_resources SET available_versions = $1 WHERE raw @> jsonb_build_object('id', $2::text) ", pq.Array(availableVersions), resource.ID)
 
+	_, err = r.db.Exec("UPDATE security_resources SET available_versions = $1 WHERE raw @> jsonb_build_object('id', $2::text, 'kind', $3::text) ", pq.Array(availableVersions), resource.ID.Slug(), resource.ID.Kind())
+	_, err = r.db.Exec("UPDATE latest_security_resources SET available_versions = $1 WHERE raw @> jsonb_build_object('id', $2::text, 'kind', $3::text) ", pq.Array(availableVersions), resource.ID.Slug(), resource.ID.Kind())
 	return err
 }
 
 func retrieveExistingVersion(transaction *sql.Tx, resource *Resource) string {
 	var existent = ""
-	transaction.QueryRow(`SELECT raw ->> 'version' AS version FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, resource.ID).Scan(&existent)
+	transaction.QueryRow(`SELECT raw ->> 'version' AS version FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'kind', $2::text)`,
+		resource.ID.Slug(),
+		resource.ID.Kind()).Scan(&existent)
 
 	return existent
 }
 
-func (r *postgresRepository) retrieveAvailableVersions(id string) []string {
+func (r *postgresRepository) retrieveAvailableVersions(id ResourceID) []string {
 	var availableVersions = []string{}
-	r.db.QueryRow(`SELECT ARRAY(SELECT raw ->> 'version' from security_resources WHERE raw ->> 'id' = $1::text ORDER BY raw ->> 'version' DESC) FROM security_resources WHERE raw ->> 'id' = $1::text LIMIT 1;`, id).Scan(pq.Array(&availableVersions))
+	r.db.QueryRow(`SELECT ARRAY(SELECT raw ->> 'version' from security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'kind', $2::text) ORDER BY raw ->> 'version' DESC) FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'kind', $2::text) LIMIT 1;`, id.Slug(), id.Kind()).Scan(pq.Array(&availableVersions))
 
 	return availableVersions
 }
 
-func (r *postgresRepository) FindById(id string) (*Resource, error) {
-	result := new(resourceForPostgres)
+func (r *postgresRepository) FindById(id ResourceID) (*Resource, error) {
+	result := new(ResourceDTO)
 	availableVersions := []string{}
-	err := r.db.QueryRow(`SELECT available_versions, raw FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text)`, id).Scan(pq.Array(&availableVersions), &result)
+	err := r.db.QueryRow(
+		`SELECT available_versions, raw FROM latest_security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'kind', $2::text)`,
+		id.Slug(),
+		id.Kind()).Scan(pq.Array(&availableVersions), &result)
 
 	if err == sql.ErrNoRows {
 		return nil, ErrResourceNotFound
@@ -87,7 +77,7 @@ func (r *postgresRepository) FindById(id string) (*Resource, error) {
 
 	result.AvailableVersions = availableVersions
 
-	return (*Resource)(result), err
+	return result.ToEntity(), err
 }
 
 func (r *postgresRepository) FindAll() ([]*Resource, error) {
@@ -97,25 +87,25 @@ func (r *postgresRepository) FindAll() ([]*Resource, error) {
 	var result []*Resource
 	for rows.Next() {
 		availableVersions := []string{}
-		current := new(resourceForPostgres)
+		current := new(ResourceDTO)
 		if err = rows.Scan(pq.Array(&availableVersions), &current); err != nil {
 			return nil, err
 		}
 		current.AvailableVersions = availableVersions
-		result = append(result, (*Resource)(current))
+		result = append(result, current.ToEntity())
 	}
 
 	return result, err
 }
 
-func (r *postgresRepository) FindByVersion(id string, version string) (*Resource, error) {
-	result := new(resourceForPostgres)
+func (r *postgresRepository) FindByVersion(id ResourceID, version string) (*Resource, error) {
+	result := new(ResourceDTO)
 	availableVersions := []string{}
-	err := r.db.QueryRow(`SELECT available_versions, raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'version', $2::text)`, id, version).Scan(pq.Array(&availableVersions), &result)
+	err := r.db.QueryRow(`SELECT available_versions, raw FROM security_resources WHERE raw @> jsonb_build_object('id', $1::text, 'kind', $2::text, 'version', $3::text)`, id.Slug(), id.Kind(), version).Scan(pq.Array(&availableVersions), &result)
 	if err == sql.ErrNoRows {
 		return nil, ErrResourceNotFound
 	}
 
 	result.AvailableVersions = availableVersions
-	return (*Resource)(result), err
+	return result.ToEntity(), err
 }
