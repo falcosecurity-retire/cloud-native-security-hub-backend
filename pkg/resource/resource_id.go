@@ -5,13 +5,13 @@ import (
 )
 
 type ResourceID struct {
-	name string
+	slug string
 	kind string
 }
 
 func NewResourceID(name, kind string) ResourceID {
 	return ResourceID{
-		name: slug.Make(name),
+		slug: slug.Make(name),
 		kind: kind,
 	}
 }
