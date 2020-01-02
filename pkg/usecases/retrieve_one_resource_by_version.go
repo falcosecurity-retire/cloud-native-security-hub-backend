@@ -11,5 +11,7 @@ type RetrieveOneResourceByVersion struct {
 }
 
 func (useCase *RetrieveOneResourceByVersion) Execute() (res *resource.Resource, err error) {
-	return useCase.ResourceRepository.FindByVersion(useCase.ResourceID, useCase.Version)
+	return useCase.ResourceRepository.FindByVersion(
+		resource.NewResourceID(useCase.ResourceID, "FalcoRules"),
+		useCase.Version)
 }

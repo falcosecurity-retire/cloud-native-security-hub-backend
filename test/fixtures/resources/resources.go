@@ -13,8 +13,7 @@ func Apache() *resource.Resource {
 
 func ApacheWithoutAvailableVersions() *resource.Resource {
 	return &resource.Resource{
-		ID:          "apache",
-		Kind:        "FalcoRules",
+		ID:          resource.NewResourceID("apache", "FalcoRules"),
 		Vendor:      "Apache",
 		Name:        "Apache",
 		Version:     "1.0.0",
@@ -48,9 +47,8 @@ func MongoDB() *resource.Resource {
 
 func MongoDBWithoutAvailableVersions() *resource.Resource {
 	return &resource.Resource{
-		Kind:        "FalcoRules",
 		Vendor:      "Mongo",
-		ID:          "mongodb",
+		ID:          resource.NewResourceID("mongodb", "FalcoRules"),
 		Name:        "MongoDB",
 		Version:     "1.0.0",
 		Description: "# MongoDB Falco Rules\n",

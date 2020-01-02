@@ -9,7 +9,9 @@ type RetrieveFalcoRulesForHelmChartByVersion struct {
 }
 
 func (useCase *RetrieveFalcoRulesForHelmChartByVersion) Execute() ([]byte, error) {
-	res, err := useCase.ResourceRepository.FindByVersion(useCase.ResourceID, useCase.Version)
+	res, err := useCase.ResourceRepository.FindByVersion(
+		resource.NewResourceID(useCase.ResourceID, "FalcoRules"),
+		useCase.Version)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ func (r *MemoryRepository) FindAll() ([]*Resource, error) {
 	return r.resources, nil
 }
 
-func (r *MemoryRepository) FindById(id string) (*Resource, error) {
+func (r *MemoryRepository) FindById(id ResourceID) (*Resource, error) {
 	for _, res := range r.resources {
 		if res.ID == id {
 			return res, nil
@@ -28,7 +28,7 @@ func (r *MemoryRepository) Save(resource *Resource) error {
 	return nil
 }
 
-func (r *MemoryRepository) FindByVersion(id string, version string) (*Resource, error) {
+func (r *MemoryRepository) FindByVersion(id ResourceID, version string) (*Resource, error) {
 	for _, res := range r.resources {
 		if res.ID == id && res.Version == version {
 			return res, nil

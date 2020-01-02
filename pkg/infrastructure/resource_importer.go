@@ -21,7 +21,7 @@ func GetResourcesFromPath(path string) ([]*resource.Resource, error) {
 			if err != nil {
 				return err
 			}
-			resources = append(resources, &resource)
+			resources = append(resources, resource)
 		}
 		return nil
 	})
@@ -29,17 +29,19 @@ func GetResourcesFromPath(path string) ([]*resource.Resource, error) {
 	return resources, nil
 }
 
-func getResourceFromFile(path string) (resource resource.Resource, err error) {
+func getResourceFromFile(path string) (*resource.Resource, error) {
+	var dto resource.ResourceDTO
+
 	file, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	defer file.Close()
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	err = yaml.NewDecoder(file).Decode(&resource)
+	err = yaml.NewDecoder(file).Decode(&dto)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	return
+	return dto.ToEntity(), nil
 }
