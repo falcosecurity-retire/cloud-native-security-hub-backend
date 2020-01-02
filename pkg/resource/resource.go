@@ -7,15 +7,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Kind string
-
-const (
-	FALCO_RULE Kind = "FalcoRule"
-)
-
 type Resource struct {
 	ID                string           `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind              Kind             `json:"kind" yaml:"kind"`
+	Kind              string           `json:"kind" yaml:"kind"`
 	Version           string           `json:"version" yaml:"version"`
 	AvailableVersions []string         `json:"availableVersions" yaml:"-"`
 	Vendor            string           `json:"vendor" yaml:"vendor"`
