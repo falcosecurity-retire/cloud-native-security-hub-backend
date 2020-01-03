@@ -9,7 +9,7 @@ type RetrieveFalcoRulesForHelmChart struct {
 
 func (useCase *RetrieveFalcoRulesForHelmChart) Execute() ([]byte, error) {
 	res, err := useCase.ResourceRepository.FindById(
-		resource.NewResourceID(useCase.ResourceID, "FalcoRules"))
+		resource.NewResourceID(useCase.ResourceID, resource.FalcoRules))
 	if err != nil {
 		return nil, err
 	}

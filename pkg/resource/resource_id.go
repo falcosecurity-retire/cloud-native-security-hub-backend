@@ -4,6 +4,11 @@ import (
 	"github.com/gosimple/slug"
 )
 
+const (
+	FalcoRules              = "FalcoRules"
+	OpenPolicyAgentPolicies = "OpenPolicyAgentPolicies"
+)
+
 type ResourceID struct {
 	slug string
 	kind string

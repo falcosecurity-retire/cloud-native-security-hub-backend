@@ -15,6 +15,7 @@ var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 		useCase := usecases.RetrieveOneResourceByVersion{
 			ResourceRepository: newResourceRepositoryWithVersions(),
 			ResourceID:         "apache",
+			Kind:               resource.FalcoRules,
 			Version:            "1.0.1",
 		}
 
@@ -30,6 +31,7 @@ var _ = Describe("RetrieveOneResourceByVersion use case", func() {
 			useCase := usecases.RetrieveOneResourceByVersion{
 				ResourceRepository: newResourceRepositoryWithVersions(),
 				ResourceID:         "apache",
+				Kind:               resource.FalcoRules,
 				Version:            "2.0.0",
 			}
 
