@@ -5,10 +5,9 @@ import (
 )
 
 type RetrieveOneVendor struct {
-	VendorID         string
 	VendorRepository vendor.Repository
 }
 
-func (useCase *RetrieveOneVendor) Execute() (res *vendor.Vendor, err error) {
-	return useCase.VendorRepository.FindById(useCase.VendorID)
+func (r *RetrieveOneVendor) Execute(vendorID string) (*vendor.Vendor, error) {
+	return r.VendorRepository.FindById(vendorID)
 }

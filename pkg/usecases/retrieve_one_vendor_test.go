@@ -11,25 +11,23 @@ import (
 )
 
 var _ = Describe("RetrieveOneVendor use case", func() {
-	It("returns one vendor", func() {
-		useCase := usecases.RetrieveOneVendor{
-			VendorRepository: NewVendorRepository(),
-			VendorID:         "apache",
-		}
+	var useCase usecases.RetrieveOneVendor
 
-		result, _ := useCase.Execute()
+	BeforeEach(func() {
+		useCase = usecases.RetrieveOneVendor{
+			VendorRepository: NewVendorRepository(),
+		}
+	})
+
+	It("returns one vendor", func() {
+		result, _ := useCase.Execute("apache")
 
 		Expect(result).To(Equal(vendors.Apache()))
 	})
 
 	Context("when vendor does not exist", func() {
 		It("returns vendor not found error", func() {
-			useCase := usecases.RetrieveOneVendor{
-				VendorRepository: NewVendorRepository(),
-				VendorID:         "non-existent",
-			}
-
-			retrieved, err := useCase.Execute()
+			retrieved, err := useCase.Execute("nonExistent")
 
 			Expect(retrieved).To(BeNil())
 			Expect(err).To(MatchError(vendor.ErrVendorNotFound))

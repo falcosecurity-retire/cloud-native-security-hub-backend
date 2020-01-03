@@ -11,13 +11,13 @@ import (
 
 type Factory interface {
 	NewRetrieveAllResourcesUseCase() *RetrieveAllResources
-	NewRetrieveOneResourceUseCase(resourceID, kind string) *RetrieveOneResource
-	NewRetrieveOneResourceByVersionUseCase(resourceID, kind, version string) *RetrieveOneResourceByVersion
-	NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart
-	NewRetrieveFalcoRulesForHelmChartByVersionUseCase(resourceID string, version string) *RetrieveFalcoRulesForHelmChartByVersion
+	NewRetrieveOneResourceUseCase() *RetrieveOneResource
+	NewRetrieveOneResourceByVersionUseCase() *RetrieveOneResourceByVersion
+	NewRetrieveFalcoRulesForHelmChartUseCase() *RetrieveFalcoRulesForHelmChart
+	NewRetrieveFalcoRulesForHelmChartByVersionUseCase() *RetrieveFalcoRulesForHelmChartByVersion
 	NewRetrieveAllVendorsUseCase() *RetrieveAllVendors
-	NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor
-	NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor
+	NewRetrieveOneVendorUseCase() *RetrieveOneVendor
+	NewRetrieveAllResourcesFromVendorUseCase() *RetrieveAllResourcesFromVendor
 
 	NewResourcesRepository() resource.Repository
 	NewVendorRepository() vendor.Repository
@@ -31,6 +31,7 @@ func NewFactory() Factory {
 	return factory
 }
 
+// TODO: Instantiate useCases only once
 type factory struct {
 	db                 *sql.DB
 	vendorRepository   vendor.Repository
@@ -38,41 +39,23 @@ type factory struct {
 }
 
 func (f *factory) NewRetrieveAllResourcesUseCase() *RetrieveAllResources {
-	return &RetrieveAllResources{
-		ResourceRepository: f.resourceRepository,
-	}
+	return &RetrieveAllResources{ResourceRepository: f.resourceRepository}
 }
 
-func (f *factory) NewRetrieveOneResourceUseCase(resourceID, kind string) *RetrieveOneResource {
-	return &RetrieveOneResource{
-		ResourceRepository: f.resourceRepository,
-		ResourceID:         resourceID,
-		Kind:               kind,
-	}
+func (f *factory) NewRetrieveOneResourceUseCase() *RetrieveOneResource {
+	return &RetrieveOneResource{ResourceRepository: f.resourceRepository}
 }
 
-func (f *factory) NewRetrieveOneResourceByVersionUseCase(resourceID, kind, version string) *RetrieveOneResourceByVersion {
-	return &RetrieveOneResourceByVersion{
-		ResourceRepository: f.resourceRepository,
-		ResourceID:         resourceID,
-		Version:            version,
-		Kind:               kind,
-	}
+func (f *factory) NewRetrieveOneResourceByVersionUseCase() *RetrieveOneResourceByVersion {
+	return &RetrieveOneResourceByVersion{ResourceRepository: f.resourceRepository}
 }
 
-func (f *factory) NewRetrieveFalcoRulesForHelmChartUseCase(resourceID string) *RetrieveFalcoRulesForHelmChart {
-	return &RetrieveFalcoRulesForHelmChart{
-		ResourceRepository: f.resourceRepository,
-		ResourceID:         resourceID,
-	}
+func (f *factory) NewRetrieveFalcoRulesForHelmChartUseCase() *RetrieveFalcoRulesForHelmChart {
+	return &RetrieveFalcoRulesForHelmChart{ResourceRepository: f.resourceRepository}
 }
 
-func (f *factory) NewRetrieveFalcoRulesForHelmChartByVersionUseCase(resourceID string, version string) *RetrieveFalcoRulesForHelmChartByVersion {
-	return &RetrieveFalcoRulesForHelmChartByVersion{
-		ResourceRepository: f.resourceRepository,
-		ResourceID:         resourceID,
-		Version:            version,
-	}
+func (f *factory) NewRetrieveFalcoRulesForHelmChartByVersionUseCase() *RetrieveFalcoRulesForHelmChartByVersion {
+	return &RetrieveFalcoRulesForHelmChartByVersion{ResourceRepository: f.resourceRepository}
 }
 
 func (f *factory) NewRetrieveAllVendorsUseCase() *RetrieveAllVendors {
@@ -81,16 +64,12 @@ func (f *factory) NewRetrieveAllVendorsUseCase() *RetrieveAllVendors {
 	}
 }
 
-func (f *factory) NewRetrieveOneVendorUseCase(vendorID string) *RetrieveOneVendor {
-	return &RetrieveOneVendor{
-		VendorRepository: f.vendorRepository,
-		VendorID:         vendorID,
-	}
+func (f *factory) NewRetrieveOneVendorUseCase() *RetrieveOneVendor {
+	return &RetrieveOneVendor{VendorRepository: f.vendorRepository}
 }
 
-func (f *factory) NewRetrieveAllResourcesFromVendorUseCase(vendorID string) *RetrieveAllResourcesFromVendor {
+func (f *factory) NewRetrieveAllResourcesFromVendorUseCase() *RetrieveAllResourcesFromVendor {
 	return &RetrieveAllResourcesFromVendor{
-		VendorID:           vendorID,
 		VendorRepository:   f.vendorRepository,
 		ResourceRepository: f.resourceRepository,
 	}
