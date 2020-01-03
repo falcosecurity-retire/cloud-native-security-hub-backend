@@ -15,6 +15,7 @@ var _ = Describe("RetrieveOneResource use case", func() {
 		useCase := usecases.RetrieveOneResource{
 			ResourceRepository: NewResourceRepository(),
 			ResourceID:         "apache",
+			Kind:               resource.FalcoRules,
 		}
 
 		result, _ := useCase.Execute()
@@ -27,6 +28,7 @@ var _ = Describe("RetrieveOneResource use case", func() {
 			useCase := usecases.RetrieveOneResource{
 				ResourceRepository: NewResourceRepository(),
 				ResourceID:         "notFound",
+				Kind:               resource.FalcoRules,
 			}
 
 			retrieved, err := useCase.Execute()

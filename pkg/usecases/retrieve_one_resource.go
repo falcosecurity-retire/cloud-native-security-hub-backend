@@ -6,10 +6,11 @@ import (
 
 type RetrieveOneResource struct {
 	ResourceRepository resource.Repository
+	Kind               string
 	ResourceID         string
 }
 
 func (useCase *RetrieveOneResource) Execute() (res *resource.Resource, err error) {
 	return useCase.ResourceRepository.FindById(
-		resource.NewResourceID(useCase.ResourceID, "FalcoRules"))
+		resource.NewResourceID(useCase.ResourceID, useCase.Kind))
 }

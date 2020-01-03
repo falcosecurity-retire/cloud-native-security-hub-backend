@@ -7,11 +7,12 @@ import (
 type RetrieveOneResourceByVersion struct {
 	ResourceRepository resource.Repository
 	ResourceID         string
+	Kind               string
 	Version            string
 }
 
 func (useCase *RetrieveOneResourceByVersion) Execute() (res *resource.Resource, err error) {
 	return useCase.ResourceRepository.FindByVersion(
-		resource.NewResourceID(useCase.ResourceID, "FalcoRules"),
+		resource.NewResourceID(useCase.ResourceID, useCase.Kind),
 		useCase.Version)
 }
