@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -83,7 +84,14 @@ func collectionToDTO(resources []*resource.Resource) []*resource.ResourceDTO {
 }
 
 func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	useCase := h.factory.NewRetrieveOneResourceUseCase(params.ByName("resource"))
+	kind, err := parseKind(params.ByName("kind"))
+	if err != nil {
+		writer.WriteHeader(404)
+		h.logRequest(request, 404)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+	useCase := h.factory.NewRetrieveOneResourceUseCase(params.ByName("resource"), kind)
 	resources, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
@@ -96,7 +104,25 @@ func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWrit
 	json.NewEncoder(writer).Encode(resource.NewResourceDTO(resources))
 }
 
+func parseKind(slug string) (string, error) {
+	switch slug {
+	case "falco-rules":
+		return resource.FalcoRules, nil
+	case "open-policy-agent-policies":
+		return resource.OpenPolicyAgentPolicies, nil
+	default:
+		return "", errors.New(fmt.Sprintf("%s is not a valid kind type", slug))
+	}
+}
+
 func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	if params.ByName("kind") != "falco-rules" {
+		writer.WriteHeader(400)
+		h.logRequest(request, 400)
+		writer.Write([]byte(errors.New(fmt.Sprintf("This operation is only allowed for falco-rules")).Error()))
+		return
+	}
+
 	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartUseCase(params.ByName("resource"))
 	content, err := useCase.Execute()
 	if err != nil {
@@ -111,7 +137,14 @@ func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.Re
 }
 
 func (h *handlerRepository) retrieveOneResourceByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	useCase := h.factory.NewRetrieveOneResourceByVersionUseCase(params.ByName("resource"), params.ByName("version"))
+	kind, err := parseKind(params.ByName("kind"))
+	if err != nil {
+		writer.WriteHeader(404)
+		h.logRequest(request, 404)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+	useCase := h.factory.NewRetrieveOneResourceByVersionUseCase(params.ByName("resource"), kind, params.ByName("version"))
 	resources, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
@@ -125,6 +158,13 @@ func (h *handlerRepository) retrieveOneResourceByVersionHandler(writer http.Resp
 }
 
 func (h *handlerRepository) retrieveFalcoRulesForHelmChartByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	if params.ByName("kind") != "falco-rules" {
+		writer.WriteHeader(400)
+		h.logRequest(request, 400)
+		writer.Write([]byte(errors.New(fmt.Sprintf("This operation is only allowed for falco-rules")).Error()))
+		return
+	}
+
 	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartByVersionUseCase(params.ByName("resource"), params.ByName("version"))
 	content, err := useCase.Execute()
 	if err != nil {
