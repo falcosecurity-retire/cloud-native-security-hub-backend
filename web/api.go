@@ -3,10 +3,13 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
-	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
+	"github.com/falcosecurity/cloud-native-security-hub/pkg/usecases"
 )
 
 type HandlerRepository interface {
@@ -66,7 +69,17 @@ func (h *handlerRepository) retrieveAllResourcesHandler(writer http.ResponseWrit
 	writer.Header().Set("Content-Type", "application/json")
 
 	h.logRequest(request, 200)
-	json.NewEncoder(writer).Encode(resources)
+	json.NewEncoder(writer).Encode(collectionToDTO(resources))
+}
+
+func collectionToDTO(resources []*resource.Resource) []*resource.ResourceDTO {
+	var result []*resource.ResourceDTO
+
+	for _, current := range resources {
+		result = append(result, resource.NewResourceDTO(current))
+	}
+
+	return result
 }
 
 func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -80,7 +93,7 @@ func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWrit
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
-	json.NewEncoder(writer).Encode(resources)
+	json.NewEncoder(writer).Encode(resource.NewResourceDTO(resources))
 }
 
 func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -108,7 +121,7 @@ func (h *handlerRepository) retrieveOneResourceByVersionHandler(writer http.Resp
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
-	json.NewEncoder(writer).Encode(resources)
+	json.NewEncoder(writer).Encode(resource.NewResourceDTO(resources))
 }
 
 func (h *handlerRepository) retrieveFalcoRulesForHelmChartByVersionHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -127,7 +140,7 @@ func (h *handlerRepository) retrieveFalcoRulesForHelmChartByVersionHandler(write
 
 func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	useCase := h.factory.NewRetrieveAllVendorsUseCase()
-	resources, err := useCase.Execute()
+	vendors, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -136,12 +149,12 @@ func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
-	json.NewEncoder(writer).Encode(resources)
+	json.NewEncoder(writer).Encode(vendors)
 }
 
 func (h *handlerRepository) retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	useCase := h.factory.NewRetrieveOneVendorUseCase(params.ByName("vendor"))
-	resources, err := useCase.Execute()
+	vendor, err := useCase.Execute()
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -150,7 +163,7 @@ func (h *handlerRepository) retrieveOneVendorsHandler(writer http.ResponseWriter
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
-	json.NewEncoder(writer).Encode(resources)
+	json.NewEncoder(writer).Encode(vendor)
 }
 
 func (h *handlerRepository) retrieveAllResourcesFromVendorHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -164,7 +177,7 @@ func (h *handlerRepository) retrieveAllResourcesFromVendorHandler(writer http.Re
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	h.logRequest(request, 200)
-	json.NewEncoder(writer).Encode(resources)
+	json.NewEncoder(writer).Encode(collectionToDTO(resources))
 }
 
 func (h *handlerRepository) healthCheckHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
