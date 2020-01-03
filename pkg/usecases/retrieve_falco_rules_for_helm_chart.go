@@ -4,12 +4,12 @@ import "github.com/falcosecurity/cloud-native-security-hub/pkg/resource"
 
 type RetrieveFalcoRulesForHelmChart struct {
 	ResourceRepository resource.Repository
-	ResourceID         string
 }
 
-func (useCase *RetrieveFalcoRulesForHelmChart) Execute() ([]byte, error) {
-	res, err := useCase.ResourceRepository.FindById(
-		resource.NewResourceID(useCase.ResourceID, resource.FalcoRules))
+func (r *RetrieveFalcoRulesForHelmChart) Execute(resourceID string) ([]byte, error) {
+	res, err := r.ResourceRepository.FindById(
+		resource.NewResourceID(resourceID, resource.FalcoRules))
+
 	if err != nil {
 		return nil, err
 	}

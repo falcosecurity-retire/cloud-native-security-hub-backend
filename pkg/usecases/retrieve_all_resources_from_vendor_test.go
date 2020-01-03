@@ -11,27 +11,24 @@ import (
 )
 
 var _ = Describe("RetrieveAllResourcesFromVendor use case", func() {
-	It("returns all the avaliable resources for a vendor", func() {
-		useCase := usecases.RetrieveAllResourcesFromVendor{
-			VendorID:           "apache",
+	var useCase usecases.RetrieveAllResourcesFromVendor
+
+	BeforeEach(func() {
+		useCase = usecases.RetrieveAllResourcesFromVendor{
 			ResourceRepository: newResourceRepositoryWithoutMongoDB(),
 			VendorRepository:   NewVendorRepository(),
 		}
+	})
 
-		retrieved, _ := useCase.Execute()
+	It("returns all the avaliable resources for a vendor", func() {
+		retrieved, _ := useCase.Execute("apache")
 
 		Expect(retrieved).To(Equal([]*resource.Resource{resources.Apache()}))
 	})
 
 	Context("when vendor does not exist", func() {
 		It("returns vendor not found error", func() {
-			useCase := usecases.RetrieveAllResourcesFromVendor{
-				VendorID:           "not-found",
-				ResourceRepository: newResourceRepositoryWithoutMongoDB(),
-				VendorRepository:   NewVendorRepository(),
-			}
-
-			retrieved, err := useCase.Execute()
+			retrieved, err := useCase.Execute("not-found")
 
 			Expect(retrieved).To(BeEmpty())
 			Expect(err).To(HaveOccurred())
@@ -40,13 +37,7 @@ var _ = Describe("RetrieveAllResourcesFromVendor use case", func() {
 
 	PContext("when vendor doesn't have resources", func() {
 		It("returns an empty resource collection", func() {
-			useCase := usecases.RetrieveAllResourcesFromVendor{
-				VendorID:           "mongo",
-				ResourceRepository: newResourceRepositoryWithoutMongoDB(),
-				VendorRepository:   NewVendorRepository(),
-			}
-
-			retrieved, err := useCase.Execute()
+			retrieved, err := useCase.Execute("mongo")
 
 			Expect(retrieved).To(BeEmpty())
 			Expect(err).To(Succeed())

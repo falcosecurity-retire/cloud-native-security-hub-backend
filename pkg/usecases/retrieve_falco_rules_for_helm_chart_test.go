@@ -8,13 +8,16 @@ import (
 )
 
 var _ = Describe("RetrieveFalcoRulesForHelmChart use case", func() {
-	It("returns the rules for being used with the Helm chart", func() {
-		useCase := usecases.RetrieveFalcoRulesForHelmChart{
-			ResourceRepository: NewResourceRepository(),
-			ResourceID:         "apache",
-		}
+	var useCase usecases.RetrieveFalcoRulesForHelmChart
 
-		result, _ := useCase.Execute()
+	BeforeEach(func() {
+		useCase = usecases.RetrieveFalcoRulesForHelmChart{
+			ResourceRepository: NewResourceRepository(),
+		}
+	})
+
+	It("returns the rules for being used with the Helm chart", func() {
+		result, _ := useCase.Execute("apache")
 
 		expected := `customRules:
   rules-apache.yaml: |
@@ -26,15 +29,9 @@ var _ = Describe("RetrieveFalcoRulesForHelmChart use case", func() {
 
 	Context("when resource doesn't exist", func() {
 		It("it returns a resource not found error", func() {
-			useCase := usecases.RetrieveFalcoRulesForHelmChart{
-				ResourceRepository: NewResourceRepository(),
-				ResourceID:         "notFound",
-			}
-
-			_, err := useCase.Execute()
+			_, err := useCase.Execute("notFound")
 
 			Expect(err).To(HaveOccurred())
 		})
-
 	})
 })

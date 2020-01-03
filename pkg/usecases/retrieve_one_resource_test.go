@@ -11,27 +11,23 @@ import (
 )
 
 var _ = Describe("RetrieveOneResource use case", func() {
-	It("returns one resource", func() {
-		useCase := usecases.RetrieveOneResource{
-			ResourceRepository: NewResourceRepository(),
-			ResourceID:         "apache",
-			Kind:               resource.FalcoRules,
-		}
+	var useCase usecases.RetrieveOneResource
 
-		result, _ := useCase.Execute()
+	BeforeEach(func() {
+		useCase = usecases.RetrieveOneResource{
+			ResourceRepository: NewResourceRepository(),
+		}
+	})
+
+	It("returns one resource", func() {
+		result, _ := useCase.Execute("apache", resource.FalcoRules)
 
 		Expect(result).To(Equal(resources.Apache()))
 	})
 
 	Context("when resource does not exist", func() {
 		It("returns resource not found error", func() {
-			useCase := usecases.RetrieveOneResource{
-				ResourceRepository: NewResourceRepository(),
-				ResourceID:         "notFound",
-				Kind:               resource.FalcoRules,
-			}
-
-			retrieved, err := useCase.Execute()
+			retrieved, err := useCase.Execute("notFound", resource.FalcoRules)
 
 			Expect(retrieved).To(BeNil())
 			Expect(err).To(MatchError(resource.ErrResourceNotFound))

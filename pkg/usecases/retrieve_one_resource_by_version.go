@@ -6,13 +6,10 @@ import (
 
 type RetrieveOneResourceByVersion struct {
 	ResourceRepository resource.Repository
-	ResourceID         string
-	Kind               string
-	Version            string
 }
 
-func (useCase *RetrieveOneResourceByVersion) Execute() (res *resource.Resource, err error) {
-	return useCase.ResourceRepository.FindByVersion(
-		resource.NewResourceID(useCase.ResourceID, useCase.Kind),
-		useCase.Version)
+func (r *RetrieveOneResourceByVersion) Execute(resourceID, kind, version string) (res *resource.Resource, err error) {
+	return r.ResourceRepository.FindByVersion(
+		resource.NewResourceID(resourceID, kind),
+		version)
 }

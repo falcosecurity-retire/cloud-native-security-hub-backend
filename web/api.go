@@ -91,8 +91,8 @@ func (h *handlerRepository) retrieveOneResourcesHandler(writer http.ResponseWrit
 		writer.Write([]byte(err.Error()))
 		return
 	}
-	useCase := h.factory.NewRetrieveOneResourceUseCase(params.ByName("resource"), kind)
-	resources, err := useCase.Execute()
+	useCase := h.factory.NewRetrieveOneResourceUseCase()
+	resources, err := useCase.Execute(params.ByName("resource"), kind)
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -123,8 +123,8 @@ func (h *handlerRepository) retrieveFalcoRulesForHelmChartHandler(writer http.Re
 		return
 	}
 
-	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartUseCase(params.ByName("resource"))
-	content, err := useCase.Execute()
+	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartUseCase()
+	content, err := useCase.Execute(params.ByName("resource"))
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -144,8 +144,8 @@ func (h *handlerRepository) retrieveOneResourceByVersionHandler(writer http.Resp
 		writer.Write([]byte(err.Error()))
 		return
 	}
-	useCase := h.factory.NewRetrieveOneResourceByVersionUseCase(params.ByName("resource"), kind, params.ByName("version"))
-	resources, err := useCase.Execute()
+	useCase := h.factory.NewRetrieveOneResourceByVersionUseCase()
+	resources, err := useCase.Execute(params.ByName("resource"), kind, params.ByName("version"))
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -165,8 +165,8 @@ func (h *handlerRepository) retrieveFalcoRulesForHelmChartByVersionHandler(write
 		return
 	}
 
-	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartByVersionUseCase(params.ByName("resource"), params.ByName("version"))
-	content, err := useCase.Execute()
+	useCase := h.factory.NewRetrieveFalcoRulesForHelmChartByVersionUseCase()
+	content, err := useCase.Execute(params.ByName("resource"), params.ByName("version"))
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -193,8 +193,8 @@ func (h *handlerRepository) retrieveAllVendorsHandler(writer http.ResponseWriter
 }
 
 func (h *handlerRepository) retrieveOneVendorsHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	useCase := h.factory.NewRetrieveOneVendorUseCase(params.ByName("vendor"))
-	vendor, err := useCase.Execute()
+	useCase := h.factory.NewRetrieveOneVendorUseCase()
+	vendor, err := useCase.Execute(params.ByName("vendor"))
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)
@@ -207,8 +207,8 @@ func (h *handlerRepository) retrieveOneVendorsHandler(writer http.ResponseWriter
 }
 
 func (h *handlerRepository) retrieveAllResourcesFromVendorHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	useCase := h.factory.NewRetrieveAllResourcesFromVendorUseCase(params.ByName("vendor"))
-	resources, err := useCase.Execute()
+	useCase := h.factory.NewRetrieveAllResourcesFromVendorUseCase()
+	resources, err := useCase.Execute(params.ByName("vendor"))
 	if err != nil {
 		writer.WriteHeader(500)
 		h.logRequest(request, 500)

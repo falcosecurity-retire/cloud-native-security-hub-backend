@@ -7,18 +7,17 @@ import (
 )
 
 type RetrieveAllResourcesFromVendor struct {
-	VendorID           string
 	VendorRepository   vendor.Repository
 	ResourceRepository resource.Repository
 }
 
-func (useCase *RetrieveAllResourcesFromVendor) Execute() (res []*resource.Resource, err error) {
-	vendor, err := useCase.VendorRepository.FindById(useCase.VendorID)
+func (r *RetrieveAllResourcesFromVendor) Execute(vendorID string) (res []*resource.Resource, err error) {
+	vendor, err := r.VendorRepository.FindById(vendorID)
 	if err != nil {
 		return
 	}
 
-	resources, err := useCase.ResourceRepository.FindAll()
+	resources, err := r.ResourceRepository.FindAll()
 	if err != nil {
 		return
 	}
