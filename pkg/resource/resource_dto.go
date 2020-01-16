@@ -7,19 +7,20 @@ import (
 )
 
 type ResourceDTO struct {
-	ID                string              `json:"id" yaml:"-"`
-	Kind              string              `json:"kind" yaml:"kind"`
-	Version           string              `json:"version" yaml:"version"`
-	AvailableVersions []string            `json:"availableVersions" yaml:"-"`
-	Vendor            string              `json:"vendor" yaml:"vendor"`
-	Name              string              `json:"name" yaml:"name"`
-	ShortDescription  string              `json:"shortDescription" yaml:"shortDescription"`
-	Description       string              `json:"description" yaml:"description"`
-	Keywords          []string            `json:"keywords" yaml:"keywords"`
-	Icon              string              `json:"icon" yaml:"icon"`
-	Website           string              `json:"website" yaml:"website"`
-	Maintainers       []*MaintainerDTO    `json:"maintainers" yaml:"maintainers"`
-	Rules             []*FalcoRuleDataDTO `json:"rules" yaml:"rules"`
+	ID                string                          `json:"id" yaml:"-"`
+	Kind              string                          `json:"kind" yaml:"kind"`
+	Version           string                          `json:"version" yaml:"version"`
+	AvailableVersions []string                        `json:"availableVersions" yaml:"-"`
+	Vendor            string                          `json:"vendor" yaml:"vendor"`
+	Name              string                          `json:"name" yaml:"name"`
+	ShortDescription  string                          `json:"shortDescription" yaml:"shortDescription"`
+	Description       string                          `json:"description" yaml:"description"`
+	Keywords          []string                        `json:"keywords" yaml:"keywords"`
+	Icon              string                          `json:"icon" yaml:"icon"`
+	Website           string                          `json:"website" yaml:"website"`
+	Maintainers       []*MaintainerDTO                `json:"maintainers" yaml:"maintainers"`
+	Rules             []*FalcoRuleDataDTO             `json:"rules,omitempty" yaml:"rules"`
+	Policies          []*OpenPolicyAgentPolicyDataDTO `json:"policies,omitempty" yaml:"policies"`
 }
 
 type MaintainerDTO struct {
@@ -28,6 +29,10 @@ type MaintainerDTO struct {
 }
 
 type FalcoRuleDataDTO struct {
+	Raw string `json:"raw" yaml:"raw"`
+}
+
+type OpenPolicyAgentPolicyDataDTO struct {
 	Raw string `json:"raw" yaml:"raw"`
 }
 
@@ -46,6 +51,7 @@ func NewResourceDTO(entity *Resource) *ResourceDTO {
 		Website:           entity.Website,
 		Maintainers:       parseMaintainers(entity.Maintainers),
 		Rules:             parseRules(entity.Rules),
+		Policies:          parsePolicies(entity.Policies),
 	}
 }
 
@@ -74,6 +80,18 @@ func parseRules(rules []*FalcoRuleData) []*FalcoRuleDataDTO {
 	return result
 }
 
+func parsePolicies(policies []*OpenPolicyAgentPolicyData) []*OpenPolicyAgentPolicyDataDTO {
+	var result []*OpenPolicyAgentPolicyDataDTO
+
+	for _, policy := range policies {
+		result = append(result, &OpenPolicyAgentPolicyDataDTO{
+			Raw: policy.Raw,
+		})
+	}
+
+	return result
+}
+
 func (r *ResourceDTO) ToEntity() *Resource {
 	return &Resource{
 		ID:                NewResourceID(r.Name, r.Kind),
@@ -88,6 +106,7 @@ func (r *ResourceDTO) ToEntity() *Resource {
 		Website:           r.Website,
 		Maintainers:       toEntityMaintainers(r.Maintainers),
 		Rules:             toEntityFalcoRuleData(r.Rules),
+		Policies:          toEntityOpenPolicyAgentPolicyData(r.Policies),
 	}
 }
 
@@ -110,6 +129,18 @@ func toEntityFalcoRuleData(rules []*FalcoRuleDataDTO) []*FalcoRuleData {
 	for _, rule := range rules {
 		result = append(result, &FalcoRuleData{
 			Raw: rule.Raw,
+		})
+	}
+
+	return result
+}
+
+func toEntityOpenPolicyAgentPolicyData(policies []*OpenPolicyAgentPolicyDataDTO) []*OpenPolicyAgentPolicyData {
+	var result []*OpenPolicyAgentPolicyData
+
+	for _, policy := range policies {
+		result = append(result, &OpenPolicyAgentPolicyData{
+			Raw: policy.Raw,
 		})
 	}
 

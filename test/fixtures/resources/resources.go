@@ -71,3 +71,34 @@ func MongoDBWithoutAvailableVersions() *resource.Resource {
 		},
 	}
 }
+
+func TrustedRegistriesImagesWithoutAvailableVersions() *resource.Resource {
+	return &resource.Resource{
+		Vendor:           "Kubernetes",
+		ID:               resource.NewResourceID("Kubernetes Trusted Registry Images", resource.OpenPolicyAgentPolicies),
+		Name:             "Kubernetes Trusted Registry Images",
+		ShortDescription: "Ensure all images running in the Kubernetes cluster comes from a trusted registry",
+		Version:          "0.1.0",
+		Description:      "# Kubernetes Trusted Registry Images\n",
+		Keywords:         []string{"kubernetes"},
+		Icon:             "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Kubernetes_logo_without_workmark.svg/300px-Kubernetes_logo_without_workmark.svg.png",
+		Maintainers: []*resource.Maintainer{
+			{
+				Name: "Néstor Salceda",
+				Link: "https://github.com/nestorsalceda",
+			},
+		},
+		Policies: []*resource.OpenPolicyAgentPolicyData{
+			{
+				Raw: "package kubernetes.admission\n\ndeny[msg] {}\n",
+			},
+		},
+	}
+}
+
+func TrustedRegistriesImages() *resource.Resource {
+	result := TrustedRegistriesImagesWithoutAvailableVersions()
+	result.AvailableVersions = []string{"0.1.0"}
+
+	return result
+}
