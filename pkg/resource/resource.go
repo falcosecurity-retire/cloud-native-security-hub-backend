@@ -17,6 +17,7 @@ type Resource struct {
 	Website           string
 	Maintainers       []*Maintainer
 	Rules             []*FalcoRuleData
+	Policies          []*OpenPolicyAgentPolicyData
 }
 
 type Maintainer struct {
@@ -25,6 +26,10 @@ type Maintainer struct {
 }
 
 type FalcoRuleData struct {
+	Raw string
+}
+
+type OpenPolicyAgentPolicyData struct {
 	Raw string
 }
 
